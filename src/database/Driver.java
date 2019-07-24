@@ -12,23 +12,24 @@ public class Driver {
 
   /**
    * This will connect to existing database, or create it if it's not there.
+   * 
    * @return the database connection.
    */
   protected static Connection connectOrCreateDataBase() throws ClassNotFoundException {
     Connection connection = null;
     System.out.println("Connecting to database...");
 
-    try {    
+    try {
       Class.forName(dbClassName);
       connection = DriverManager.getConnection(CONNECTION, USER, PASS);
       System.out.println("Successfully connected to MySQL!");
-    
+
     } catch (Exception e) {
       System.out.println("Something went wrong with your connection! see below details: ");
       e.printStackTrace();
     }
-    
+
     return connection;
   }
-  
+
 }

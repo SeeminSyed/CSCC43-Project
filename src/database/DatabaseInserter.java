@@ -21,13 +21,12 @@ public class DatabaseInserter {
       System.out.println("Something went wrong with your connection! See details below: ");
       e.printStackTrace();
     }
-    
+
     // Insert
     String sql =
         "INSERT INTO Users(sin, name, email, password, dob, occupation, phoneNum) VALUES(?,?,?,?,?,?,?)";
     try {
-      PreparedStatement preparedStatement =
-          connection.prepareStatement(sql);
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       preparedStatement.setInt(1, sin);
       preparedStatement.setString(2, name);
@@ -39,16 +38,14 @@ public class DatabaseInserter {
 
       row = preparedStatement.executeUpdate();
 
-    } catch (Exception e) {
-//      e.printStackTrace();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
     } finally {
-      
-        try {
-          connection.close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-        
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
     }
     return row;
   }

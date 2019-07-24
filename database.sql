@@ -1,10 +1,10 @@
--- C:\Users\seemi\Desktop\School\Uni\Semester 6 S19\CSCC43\Project\database.sql
+-- C:\Users\seemi\Desktop\School\Uni\Semester 6 S19\CSCC43\Project\CSCC43-Project\database.sql
 DROP DATABASE IF EXISTS mybnb;
 CREATE DATABASE mybnb;
 USE mybnb;
 
 
-DROP TABLE IF EXISTS Users CASCADE;
+-- DROP TABLE IF EXISTS Users CASCADE;
 CREATE TABLE Users (
   sin INT UNSIGNED NOT NULL,
 
@@ -18,14 +18,10 @@ CREATE TABLE Users (
 
   UNIQUE (email),
 
-  PRIMARY KEY (sin) -- ,
-
-  -- check adult
-  -- CHECK (TIMESTAMPDIFF(YEAR, birthdate, CURDATE()) >= 18)
+  PRIMARY KEY (sin)
 );
 
-
-DROP TABLE IF EXISTS Listings CASCADE;
+-- DROP TABLE IF EXISTS Listings CASCADE;
 CREATE TABLE Listings (
   listing_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id INT UNSIGNED NOT NULL,
@@ -50,13 +46,13 @@ CREATE TABLE Listings (
   PRIMARY KEY(listing_id),
   FOREIGN KEY (user_id) REFERENCES Users(sin) ON DELETE CASCADE,
 
-  CHECK (num_bedrooms >= 0) ,
-  CHECK (num_beds > 0) ,
+  CHECK (num_bedrooms >= 0),
+  CHECK (num_beds > 0),
   CHECK (num_bathrooms > 0)
 );
 
 
-DROP TABLE IF EXISTS Address CASCADE;
+-- DROP TABLE IF EXISTS Address CASCADE;
 CREATE TABLE Address (
   latitude DECIMAL(8,5) NOT NULL,
   longitude DECIMAL(8,5) NOT NULL,
@@ -84,7 +80,7 @@ CREATE TABLE Address (
 );
 
 
-DROP TABLE IF EXISTS Amenities CASCADE;
+-- DROP TABLE IF EXISTS Amenities CASCADE;
 CREATE TABLE Amenities (
   listing_id INT UNSIGNED NOT NULL,
   amenity ENUM('Essentials',
@@ -112,7 +108,7 @@ CREATE TABLE Amenities (
 );
 
 
-DROP TABLE IF EXISTS CreditInfo CASCADE;
+-- DROP TABLE IF EXISTS CreditInfo CASCADE;
 CREATE TABLE CreditInfo (
   user_id INT UNSIGNED NOT NULL,
 
@@ -124,15 +120,12 @@ CREATE TABLE CreditInfo (
   INDEX (card_num),
 
   PRIMARY KEY (user_id, card_num),
-  FOREIGN KEY (user_id) REFERENCES Users(sin) ON DELETE CASCADE -- ,
-
-  -- check expiry
-  -- CHECK (DATEDIFF(CURDATE(), expiry_date) > 0)
+  FOREIGN KEY (user_id) REFERENCES Users(sin) ON DELETE CASCADE
 );
 
 
-DROP TABLE IF EXISTS Avalability CASCADE;
-CREATE TABLE Avalability (
+-- DROP TABLE IF EXISTS Availability CASCADE;
+CREATE TABLE Availability (
   availability_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 
   listing_use ENUM('Full', 'Private Room', 'Shared'),
@@ -152,7 +145,7 @@ CREATE TABLE Avalability (
 );
 
 
-DROP TABLE IF EXISTS Bookings CASCADE;
+-- DROP TABLE IF EXISTS Bookings CASCADE;
 CREATE TABLE Bookings (
   booking_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
 
@@ -175,7 +168,7 @@ CREATE TABLE Bookings (
 );
 
 
-DROP TABLE IF EXISTS ListingComments CASCADE;
+-- DROP TABLE IF EXISTS ListingComments CASCADE;
 CREATE TABLE ListingComments (
   comment VARCHAR(1000) NOT NULL,
   date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -183,19 +176,23 @@ CREATE TABLE ListingComments (
   renter_id INT UNSIGNED NOT NULL,
   listing_id INT UNSIGNED NOT NULL,
   booking_id INT UNSIGNED NOT NULL,
+  rating INT UNSIGNED NOT NULL,
 
   INDEX (renter_id),
   INDEX (listing_id),
+  INDEX (rating),
 
   PRIMARY KEY (booking_id),
 
   FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
   FOREIGN KEY (renter_id) REFERENCES Users(sin) ON DELETE CASCADE,
-  FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE
+  FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE,
+
+  CHECK (rating >= 0  AND rating <= 5)
 );
 
 
-DROP TABLE IF EXISTS UserComments CASCADE;
+-- DROP TABLE IF EXISTS UserComments CASCADE;
 CREATE TABLE UserComments (
   comment VARCHAR(1000) NOT NULL,
   date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -204,10 +201,12 @@ CREATE TABLE UserComments (
   commentee_id INT UNSIGNED NOT NULL,
   listing_id INT UNSIGNED NOT NULL,
   booking_id INT UNSIGNED NOT NULL,
+  rating INT UNSIGNED NOT NULL,
 
   INDEX (commenter_id),
   INDEX (commentee_id),
   INDEX (listing_id),
+  INDEX (rating),
 
   PRIMARY KEY (booking_id),
 
@@ -216,13 +215,14 @@ CREATE TABLE UserComments (
   FOREIGN KEY (commentee_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE,
 
-  CHECK (commentee_id != commenter_id)
+  CHECK (commentee_id != commenter_id),
+  CHECK (rating >= 0  AND rating <= 5)
 );
 
 
 -- The view is actually a virtual table that was made by a select statement.
 -- Instead of sending the complex query to the database all the time, you can save the query as a view and then `SELECT * FROM view`.
--- 
+--
 --
 -- LOCK TABLES `address` WRITE;
 -- /*!40000 ALTER TABLE `address` DISABLE KEYS */;

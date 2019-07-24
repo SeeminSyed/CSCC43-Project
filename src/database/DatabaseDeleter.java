@@ -5,14 +5,16 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DatabaseSelector {
+public class DatabaseDeleter {
 
-  /*
-   * Gets SIN from email and password. Returns -1 if not present.
+  /**
+   * Removes user from database, as well as any associated data: listings, creditInfo, bookings,
+   * comments.
+   * 
+   * @param user_id
    */
-  public static int getSIN(String email, String password) {
+  public static void deleteUser(int user_id) {
 
-    int sin = -1;
     // Get connection
     Connection connection = null;
     try {
@@ -22,22 +24,17 @@ public class DatabaseSelector {
       e.printStackTrace();
     }
 
-    // Insert
-    String sql = "SELECT sin FROM Users WHERE email = ? AND password = ?";
+    // delete
+    String sql = "DELETE FROM Users WHERE sin = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
-      preparedStatement.setString(1, email);
-      preparedStatement.setString(2, password);
+      preparedStatement.setInt(1, user_id);
 
-      ResultSet results = preparedStatement.executeQuery();
-      if( results.next()) {
-        sin = results.getInt("sin");
-      }
-      results.close();
+      preparedStatement.executeUpdate();
 
     } catch (SQLException sqlError) {
-      //sqlError.printStackTrace();
+      sqlError.printStackTrace();
     } finally {
       try {
         connection.close();
@@ -45,7 +42,8 @@ public class DatabaseSelector {
         sqlError.printStackTrace();
       }
     }
-    return sin;
   }
+
+
 
 }

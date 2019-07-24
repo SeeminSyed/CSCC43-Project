@@ -1,8 +1,9 @@
 package pages;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.Scanner;
-import database.DatabaseInserter;
-import database.DatabaseSelector;
+import database.*;
 
 public class Main {
 
@@ -15,34 +16,34 @@ public class Main {
     // loop till exit
     do {
       System.out.println("Welcome to MyBnB!");
-      System.out.print(" 1. Sign Up \n 2. Sign In \n 3. Exit \n");
+      System.out.print(" 1. Sign In \n 2. Sign Up \n 0. Exit \n");
       System.out.print("Enter the option number: ");
       // get input
       userInput = new Scanner(System.in);
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
-      } catch (Exception e) {
-        userChoice = 0;
+      } catch (NumberFormatException number) {
+        userChoice = -1;
       }
 
       // sign up, sign in or exit
       switch (userChoice) {
         case 1:
-          System.out.println("Signing Up... ");
-          signUp(userInput);
-          break;
-        case 2:
           System.out.println("Signing In... ");
           signIn(userInput);
           break;
-        case 3:
+        case 2:
+          System.out.println("Signing Up... ");
+          signUp(userInput);
+          break;
+        case 0:
           System.out.println("Bye");
           break;
         default:
           System.out.println(">>>\nCommand not recognized. Please try again.\n>>>");
           break;
       }
-    } while (userChoice != 3);
+    } while (userChoice != 0);
     userInput.close();
   }
 
@@ -65,31 +66,70 @@ public class Main {
       // get info
       System.out.print(" Your Security Insurance Number: ");
       sin = Integer.parseInt(userInput.nextLine());
+      if(sin == 0) {
+        throw new EmptyFormException();
+      }
 
       System.out.print(" Name: ");
       name = userInput.nextLine();
+      if(name.isEmpty()) {
+        throw new EmptyFormException();
+      }
 
       System.out.print(" Email: ");
       email = userInput.nextLine();
+      if(email.isEmpty()) {
+        throw new EmptyFormException();
+      }
       System.out.print(" Password: ");
       password = userInput.nextLine();
+      if(password.isEmpty()) {
+        throw new EmptyFormException();
+      }
 
-      System.out.print(" Date of birth as 'YYYY-MM-DD': ");
+      System.out.print(
+          " Date of birth as 'YYYY-MM-DD' (You must be at least 18 years of age to access this service): ");
       dob = userInput.nextLine();
+      // Check >18yo
+      Period period =
+          Period.between(
+              LocalDate.of(Integer.parseInt(dob.substring(0, 4)),
+                  Integer.parseInt(dob.substring(5, 7)), Integer.parseInt(dob.substring(8))),
+              LocalDate.now());
+      if (period.getYears() < 18) {
+        throw new UserTooYoungException();
+      }
+
       System.out.print(" Occupation: ");
       occupation = userInput.nextLine();
+      if(occupation.isEmpty()) {
+        throw new EmptyFormException();
+      }
       System.out.print(" Phone number as numbers only: ");
       phoneNum = Integer.parseInt(userInput.nextLine());
+      if(phoneNum == 0) {
+        throw new EmptyFormException();
+      }
 
       // insert info to database and if row number returned, then valid
       if (DatabaseInserter.insertUser(sin, name, email, password, dob, occupation, phoneNum) > 0) {
         System.out.println("You've signed up!");
       } else {
-        System.out.println(">>> \nnYour account was not created due to invalid input. Please try again.\n>>>");
+        System.out.println(
+            ">>> \nYour account was not created due to invalid input. Please try again.\n>>>");
       }
 
-    } catch (Exception e) {
-      System.out.println(">>> \nYour account was not created due to invalid input. Please try again.\n>>>");
+    } catch (StringIndexOutOfBoundsException dob_format_error) {
+      System.out.println(
+          ">>>\nYour account was not created as your date of birth was entered incorrectly.\n>>>");
+    } catch (UserTooYoungException eighteen) {
+      System.out.println(
+          ">>>\nYour account was not created as you must be at least 18 years of age.\n>>>");
+    } catch (NumberFormatException number) {
+      System.out.println(">>>\nThis is a numbers-only field. Please try again.\n>>>");
+    } catch (EmptyFormException empty) {
+      System.out.println(
+          ">>>\nYour account was not created as you left a field empty.\n>>>");
     }
   }
 
@@ -112,35 +152,16 @@ public class Main {
       // Get user_id from database and if user_id returned, then logged in
       if ((user_id = DatabaseSelector.getSIN(email, password)) > 0) {
         System.out.println(">>>\nYou've signed in successfully!\n>>>");
-        UserHome.main(userInput, user_id);
+        UserHome.main(userInput, user_id, email, password);
         System.out.println(">>>\nYou've signed out successfully!\n>>>");
       } else {
-        System.out.println(">>>\nSign in failed. Please try again.\n>>>");
+        throw new InvalidCredentialsExpection();
       }
-    } catch (Exception e) {
-      System.out.println(">>>\nSign in failed. Please try again.\n>>>");
+    } catch (InvalidCredentialsExpection invalid) {
+      System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
+    } catch (Exception generic) {
+      System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
     }
   }
 
-
 }
-
-
-//
-// private static void address() {
-// System.out.print("Address: ");
-// String address = newUserInput.nextLine();
-// System.out.print("Your credit card number: ");
-// String creditCard = newUserInput.nextLine();
-// System.out.print("The city you live in currently: ");
-// String city = newUserInput.nextLine();
-// System.out.print("The province you live in currently: ");
-// String province = newUserInput.nextLine();
-// System.out.print("The country you live in currently: ");
-// String country = newUserInput.nextLine();
-// System.out.print("The longitude you are currently located on: ");
-// float longitude = newUserInput.nextFloat();
-// System.out.print("The lattitude you are currently located on: ");
-// float lattitude = newUserInput.nextFloat();
-//
-// }
