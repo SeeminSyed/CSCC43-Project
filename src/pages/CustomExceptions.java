@@ -9,15 +9,7 @@ public class CustomExceptions extends Exception {
 
 }
 
-class UserTooYoungException extends CustomExceptions {
-
-  /**
-   * Serial Id for age exceptions.
-   */
-  private static final long serialVersionUID = 2879892676427089528L;
-}
-
-class InvalidCredentialsExpection extends CustomExceptions {
+class InvalidFormException extends CustomExceptions {
 
   /**
    * Serial Id for log in exceptions

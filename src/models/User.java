@@ -1,9 +1,8 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import database.DatabaseDeleter;
+import database.*;
 
 public class User {
 
@@ -26,6 +25,8 @@ public class User {
     this.sin = sin;
     this.email = email;
     this.password = password;
+    
+    this.cards.addAll(DatabaseSelector.getUserCards(getSin()));
   }
 
 //  public boolean isEligibleRenter(int renter) {
@@ -82,8 +83,7 @@ public class User {
     this.password = password;
   }
 
-
-
+  
   public List<Listing> getListings() {
     return listings;
   }
@@ -98,8 +98,26 @@ public class User {
   public List<CreditCard> getCards() {
     return cards;
   }
+  
+  public int getCardsSize() {
+    return this.cards.size();
+  }
 
-  public void deleteUser() {
+  public void databaseDeleteUser() {
     DatabaseDeleter.deleteUser(sin);
+  }
+
+  public void deleteCard(int cardListNum) {
+    // delete from database
+    this.cards.get(cardListNum-1).databaseDeleteCard();
+    // delete from user object
+    this.cards.remove(cardListNum-1);
+  }
+  
+  public void addCard(int card_num, String card_type, String exp_date) {
+    // add to user object
+    this.cards.add(new CreditCard(this.sin, card_num, card_type, exp_date));
+    //insert into database
+    this.cards.get(getCardsSize()-1).databaseInsertCard(this.sin, card_num, card_type, exp_date);
   }
 }

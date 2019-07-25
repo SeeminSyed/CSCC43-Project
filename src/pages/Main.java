@@ -1,5 +1,6 @@
 package pages;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Scanner;
@@ -97,7 +98,7 @@ public class Main {
                   Integer.parseInt(dob.substring(5, 7)), Integer.parseInt(dob.substring(8))),
               LocalDate.now());
       if (period.getYears() < 18) {
-        throw new UserTooYoungException();
+        throw new InvalidFormException();
       }
 
       System.out.print(" Occupation: ");
@@ -119,10 +120,10 @@ public class Main {
             ">>> \nYour account was not created due to invalid input. Please try again.\n>>>");
       }
 
-    } catch (StringIndexOutOfBoundsException dob_format_error) {
+    } catch (StringIndexOutOfBoundsException | DateTimeException dob_format_error) {
       System.out.println(
           ">>>\nYour account was not created as your date of birth was entered incorrectly.\n>>>");
-    } catch (UserTooYoungException eighteen) {
+    } catch (InvalidFormException eighteen) {
       System.out.println(
           ">>>\nYour account was not created as you must be at least 18 years of age.\n>>>");
     } catch (NumberFormatException number) {
@@ -155,9 +156,9 @@ public class Main {
         UserHome.main(userInput, user_id, email, password);
         System.out.println(">>>\nYou've signed out successfully!\n>>>");
       } else {
-        throw new InvalidCredentialsExpection();
+        throw new InvalidFormException();
       }
-    } catch (InvalidCredentialsExpection invalid) {
+    } catch (InvalidFormException invalid) {
       System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
     } catch (Exception generic) {
       System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
