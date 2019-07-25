@@ -62,8 +62,7 @@ public class DatabaseInserter {
     }
 
     // Insert
-    String sql =
-        "INSERT INTO CreditInfo(user_id, card_num, card_type, exp_date) VALUES(?,?,?,?)";
+    String sql = "INSERT INTO CreditInfo(user_id, card_num, card_type, exp_date) VALUES(?,?,?,?)";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -71,6 +70,47 @@ public class DatabaseInserter {
       preparedStatement.setInt(2, card_num);
       preparedStatement.setString(3, card_type);
       preparedStatement.setString(4, exp_date);
+
+      row = preparedStatement.executeUpdate();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return row;
+  }
+  
+
+  public static int insertListing(int listing_id, int user_id, String listing_type,
+      int num_bedrooms, int num_beds, int num_bathrooms, String title, String description) {
+    int row = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // Insert
+    String sql = "INSERT INTO Listings(listing_id, user_id, listing_type, num_bedrooms, num_beds, num_bathrooms, title, description) VALUES(?,?,?,?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listing_id);
+      preparedStatement.setInt(2, user_id);
+      preparedStatement.setString(3, listing_type);
+      preparedStatement.setInt(4, num_bedrooms);
+      preparedStatement.setInt(5, num_beds);
+      preparedStatement.setInt(6, num_bathrooms);
+      preparedStatement.setString(7, title);
+      preparedStatement.setString(8, description);
 
       row = preparedStatement.executeUpdate();
 

@@ -20,6 +20,23 @@ public class CreditCard {
     this.exp_date = exp_date;
   }
   
+  @Override
+  public String toString() {
+    return (getCard_type() + " - " + getCard_num() + ": Expires "
+            + getExp_date());
+  }
+  
+  public void databaseDeleteCard() {
+    DatabaseDeleter.deleteCard(this.user_id, this.card_num);
+  }
+  
+  public void databaseInsertCard(int user_id, int card_num, String card_type, String exp_date) {
+    DatabaseInserter.insertCard(user_id, card_num, card_type, exp_date);
+  }
+  
+  
+  // ** GETTERS/SETTERS **//
+
   public int getUser_id() {
     return user_id;
   }
@@ -52,17 +69,4 @@ public class CreditCard {
     this.exp_date = exp_date;
   }
 
-  @Override
-  public String toString() {
-    return (getCard_type() + " - " + getCard_num() + ": Expires "
-            + getExp_date());
-  }
-  
-  public void databaseDeleteCard() {
-    DatabaseDeleter.deleteCard(this.user_id, this.card_num);
-  }
-  
-  public void databaseInsertCard(int user_id, int card_num, String card_type, String exp_date) {
-    DatabaseInserter.insertCard(user_id, card_num, card_type, exp_date);
-  }
 }

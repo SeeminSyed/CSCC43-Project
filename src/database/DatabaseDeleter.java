@@ -45,11 +45,12 @@ public class DatabaseDeleter {
 
   /**
    * Removes credit card from database.
+   * 
    * @param user_id
    * @param card_id
    */
   public static void deleteCard(int user_id, int card_id) {
- // Get connection
+    // Get connection
     Connection connection = null;
     try {
       connection = Driver.connectOrCreateDataBase();
@@ -65,6 +66,37 @@ public class DatabaseDeleter {
 
       preparedStatement.setInt(1, user_id);
       preparedStatement.setInt(2, card_id);
+
+      preparedStatement.executeUpdate();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+  }
+
+  public static void deleteListing(int user_id, int listing_id) {
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // delete
+    String sql = "DELETE FROM Listings WHERE user_id = ? AND listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, user_id);
+      preparedStatement.setInt(2, listing_id);
 
       preparedStatement.executeUpdate();
 
