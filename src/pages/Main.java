@@ -3,6 +3,7 @@ package pages;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import database.*;
 
@@ -67,24 +68,24 @@ public class Main {
       // get info
       System.out.print(" Your Security Insurance Number: ");
       sin = Integer.parseInt(userInput.nextLine());
-      if(sin == 0) {
+      if (sin == 0) {
         throw new EmptyFormException();
       }
 
       System.out.print(" Name: ");
       name = userInput.nextLine();
-      if(name.isEmpty()) {
+      if (name.isEmpty()) {
         throw new EmptyFormException();
       }
 
       System.out.print(" Email: ");
       email = userInput.nextLine();
-      if(email.isEmpty()) {
+      if (email.isEmpty()) {
         throw new EmptyFormException();
       }
       System.out.print(" Password: ");
       password = userInput.nextLine();
-      if(password.isEmpty()) {
+      if (password.isEmpty()) {
         throw new EmptyFormException();
       }
 
@@ -103,12 +104,12 @@ public class Main {
 
       System.out.print(" Occupation: ");
       occupation = userInput.nextLine();
-      if(occupation.isEmpty()) {
+      if (occupation.isEmpty()) {
         throw new EmptyFormException();
       }
       System.out.print(" Phone number as numbers only: ");
       phoneNum = Integer.parseInt(userInput.nextLine());
-      if(phoneNum == 0) {
+      if (phoneNum == 0) {
         throw new EmptyFormException();
       }
 
@@ -119,7 +120,6 @@ public class Main {
         System.out.println(
             ">>> \nYour account was not created due to invalid input. Please try again.\n>>>");
       }
-
     } catch (StringIndexOutOfBoundsException | DateTimeException dob_format_error) {
       System.out.println(
           ">>>\nYour account was not created as your date of birth was entered incorrectly.\n>>>");
@@ -129,8 +129,7 @@ public class Main {
     } catch (NumberFormatException number) {
       System.out.println(">>>\nThis is a numbers-only field. Please try again.\n>>>");
     } catch (EmptyFormException empty) {
-      System.out.println(
-          ">>>\nYour account was not created as you left a field empty.\n>>>");
+      System.out.println(">>>\nYour account was not created as you left a field empty.\n>>>");
     }
   }
 
@@ -139,17 +138,22 @@ public class Main {
    */
   private static void signIn(Scanner userInput) {
     System.out.println("Please sign in using your email and password.");
-
-    // Get input
-    System.out.print(" Email: ");
-    String email = userInput.nextLine();
-    System.out.print(" Password: ");
-    String password = userInput.nextLine();
-
     // Validate
     int user_id = 0;
 
     try {
+      // Get input
+      System.out.print(" Email: ");
+      String email = userInput.nextLine();
+      if (email.isEmpty()) {
+        throw new InvalidFormException();
+      }
+      System.out.print(" Password: ");
+      String password = userInput.nextLine();
+      if (password.isEmpty()) {
+        throw new InvalidFormException();
+      }
+
       // Get user_id from database and if user_id returned, then logged in
       if ((user_id = DatabaseSelector.getSIN(email, password)) > 0) {
         System.out.println(">>>\nYou've signed in successfully!\n>>>");
@@ -158,9 +162,7 @@ public class Main {
       } else {
         throw new InvalidFormException();
       }
-    } catch (InvalidFormException invalid) {
-      System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
-    } catch (Exception generic) {
+    } catch (InvalidFormException | NoSuchElementException invalid) {
       System.out.println(">>>\nEmail or Password is incorrect. Please try again.\n>>>");
     }
   }

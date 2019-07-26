@@ -34,7 +34,7 @@ CREATE TABLE Listings (
 
   num_bedrooms TINYINT UNSIGNED NOT NULL,
   num_beds TINYINT UNSIGNED NOT NULL,
-  num_bathrooms DECIMAL(4,1) NOT NULL,
+  num_bathrooms TINYINT UNSIGNED NOT NULL,
 
   title VARCHAR(64) NOT NULL,
   description VARCHAR(1000) NOT NULL,
@@ -64,15 +64,15 @@ CREATE TABLE Address (
   city VARCHAR(24) NOT NULL,
   state VARCHAR(24) NOT NULL,
   country VARCHAR(24) NOT NULL,
-  postal_code VARCHAR(7) NOT NULL,
+  zipCode VARCHAR(7) NOT NULL,
 
   UNIQUE (street, unit, city, state, country),
 
   INDEX (country),
   INDEX (city, country),
-  INDEX (city, country, postal_code),
+  INDEX (city, country, zipCode),
 
-  PRIMARY KEY (latitude, longitude, unit),
+  PRIMARY KEY (listing_id),
   FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
 
   CHECK (latitude >= -180 AND latitude <= 180),

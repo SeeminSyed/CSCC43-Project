@@ -17,50 +17,16 @@ public class User {
   private final List<Comment> comments = new ArrayList<>();
   private final List<CreditCard> cards = new ArrayList<>();
 
-  /**
-   * Only using variables referenced in the application
-   * 
-   * @param sin
-   */
   public User(int sin, String email, String password) {
     this.sin = sin;
     this.email = email;
     this.password = password;
 
     this.cards.addAll(DatabaseSelector.getUserCards(getSin()));
-    this.bookings.addAll(DatabaseSelector.getUserBookings(getSin()));
+    // this.bookings.addAll(DatabaseSelector.getUserBookings(getSin()));
     this.listings.addAll(DatabaseSelector.getUserListings(getSin()));
-    this.comments.addAll(DatabaseSelector.getUserComments(getSin()));
+    // this.comments.addAll(DatabaseSelector.getUserComments(getSin()));
   }
-
-  // public boolean isEligibleRenter(int renter) {
-  // for (Listing l : listings) {
-  // if (l.isEligibleRenter(renter)) {
-  // return true;
-  // }
-  // }
-  // return false;
-  // }
-  //
-  // public boolean isEligibleCommenter(int renter) {
-  // for (Comment c : comments) {
-  // if (c.getOrigin() == renter) {
-  // return false;
-  // }
-  // }
-  // return false;
-  // }
-  //
-  // public boolean isEligibleRater(int renter) {
-  // for (Rating c : ratings) {
-  // if (c.getOrigin() == renter) {
-  // return false;
-  // }
-  // }
-  // return false;
-  // }
-
-
 
   public void databaseDeleteUser() {
     DatabaseDeleter.deleteUser(sin);
@@ -68,30 +34,78 @@ public class User {
 
   public void deleteCard(int cardListNum) {
     // delete from database
-    this.cards.get(cardListNum - 1).databaseDeleteCard();
+    this.cards.get(cardListNum).databaseDeleteCard();
     // delete from user object
-    this.cards.remove(cardListNum - 1);
+    this.cards.remove(cardListNum);
   }
 
-  public void addCard(int card_num, String card_type, String exp_date) {
-    // add to user object
-    this.cards.add(new CreditCard(this.sin, card_num, card_type, exp_date));
+  /**
+   * Returns true if added
+   */
+  public boolean addCard(int card_num, String card_type, String exp_date) {
     // insert into database
-    this.cards.get(getNumCards() - 1).databaseInsertCard(this.sin, card_num, card_type, exp_date);
+    if (databaseInsertCard(this.sin, card_num, card_type, exp_date) == true) {
+      // add to user object
+      this.cards.add(new CreditCard(this.sin, card_num, card_type, exp_date));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if added
+   */
+  public boolean databaseInsertCard(int user_id, int card_num, String card_type, String exp_date) {
+    // insert info to database and if row number returned, then valid
+    if (DatabaseInserter.insertCard(user_id, card_num, card_type, exp_date) > 0) {
+      System.out.println("Card Added!");
+      return true;
+    } else {
+      System.out.println(">>> \nYour card was not added. Please try again.\n>>>");
+      return false;
+    }
+
   }
 
   public void deleteListing(int listingListNum) {
     // delete from database
-    this.listings.get(listingListNum - 1).databaseDeleteListing();
+    this.listings.get(listingListNum).databaseDeleteListing();
     // delete from user object
-    this.listings.remove(listingListNum - 1);
+    this.listings.remove(listingListNum);
   }
 
-  public void addListing(int listing_id, String listing_type, int num_bedrooms, int num_beds, int num_bathrooms, String title, String description) {
-    // add to user object
-    this.listings.add(new Listing(listing_id, this.sin, listing_type, num_bedrooms, num_beds, num_bathrooms, title, description));
+  /**
+   * Returns true if added
+   */
+  public boolean addListing(String listing_type, int num_bedrooms, int num_beds, int num_bathrooms,
+      String title, String description) {
     // insert into database
-    this.listings.get(getNumListings() - 1).databaseInsertListing(listing_id, this.sin, listing_type, num_bedrooms, num_beds, num_bathrooms, title, description);
+    int listing_id = databaseInsertListing(this.sin, listing_type, num_bedrooms, num_beds,
+        num_bathrooms, title, description);
+
+    // add to user object
+    if (listing_id > 0) {
+      this.listings.add(new Listing(listing_id, this.sin, listing_type, num_bedrooms, num_beds,
+          num_bathrooms, title, description));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns listing_id if added
+   */
+  private int databaseInsertListing(int user_id, String listing_type, int num_bedrooms,
+      int num_beds, int num_bathrooms, String title, String description) {
+    int listing_id = 0;
+    // insert info to database and if row number returned, then valid
+    if ((listing_id = DatabaseInserter.insertListing(user_id, listing_type, num_bedrooms, num_beds,
+        num_bathrooms, title, description)) > 0) {
+      System.out.println("Listing Added!");
+    } else {
+      System.out.println(">>> \nYour Listing was not added. Please try again.\n>>>");
+    }
+    return listing_id;
   }
 
   // ** GETTERS/SETTERS **//

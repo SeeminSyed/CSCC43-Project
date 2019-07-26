@@ -29,6 +29,7 @@ public class CreditInfo {
       for (CreditCard card : userCards) {
         i++;
         System.out.println(i + ". " + card.toString());
+        System.out.println("------------------------------------------------");
       }
       System.out.println(">>>");
 
@@ -51,7 +52,11 @@ public class CreditInfo {
       switch (userChoice) {
         case 1:
           System.out.println("To Add Card... ");
-          addCardForm(userInput, user);
+          try {
+            addCardForm(userInput, user);
+          } catch (EmptyFormException | InvalidFormException invalid) {
+            System.out.println("Invalid input. Going back.");
+          }
           break;
         case 2:
           // Get input
@@ -80,74 +85,68 @@ public class CreditInfo {
    * 
    * @param userInput
    * @param user
+   * @throws EmptyFormException
+   * @throws InvalidFormException
    */
-  private static void addCardForm(Scanner userInput, User user) {
+  private static void addCardForm(Scanner userInput, User user)
+      throws EmptyFormException, InvalidFormException {
+    System.out.println("Please input your payment details:");
+
+    // Get input
+    System.out.print(" Card Number: ");
+    int card_num = 0;
     try {
-      System.out.println("Please input your payment details:");
+      card_num = Integer.parseInt(userInput.nextLine());
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new EmptyFormException();
+    }
 
-      // Get input
-      System.out.print(" Card Number: ");
-      int card_num = 0;
-      try {
-        card_num = Integer.parseInt(userInput.nextLine());
-      } catch (NoSuchElementException | NumberFormatException invalid) {
-        throw new EmptyFormException();
+    System.out.println(
+        " Card Type (Input the chosen number): 1.'VISA', 2.'Mastercard', 3.'American Express', 4.'Discover' ");
+    String card_type = userInput.nextLine();
+    if (card_type.isEmpty()) {
+      throw new EmptyFormException();
+    } else {
+      switch (card_type) {
+        case "1":
+          System.out.println(" Card Type 1.'VISA' chosen.");
+          card_type = "VISA";
+          break;
+        case "2":
+          System.out.println(" Card Type 2.'Mastercard' chosen.");
+          card_type = "Mastercard";
+          break;
+        case "3":
+          System.out.println(" Card Type 3.'American Express' chosen.");
+          card_type = "American Express";
+          break;
+        case "4":
+          System.out.println(" Card Type 4.'Discover' chosen.");
+          card_type = "Discover";
+          break;
+        default:
+          throw new EmptyFormException();
       }
+    }
+    System.out.print(" Expiry Date as 'YYYY-MM': ");
+    String exp_date = userInput.nextLine();
+    if (exp_date.isEmpty()) {
+      throw new EmptyFormException();
+    }
+    exp_date += "-01";
 
-      System.out.println(card_num);
+    Period period =
+        Period.between(LocalDate.now(), LocalDate.of(Integer.parseInt(exp_date.substring(0, 4)),
+            Integer.parseInt(exp_date.substring(5, 7)), 1));
+    if (period.getYears() < 0 || (period.getYears() == 0 && period.getMonths() <= 0)) {
+      throw new InvalidFormException();
+    }
 
-      System.out.println(
-          " Card Type (Input the chosen number): 1.'VISA', 2.'Mastercard', 3.'American Express', 4.'Discover' ");
-      String card_type = userInput.nextLine();
-      if (card_type.isEmpty()) {
-        throw new EmptyFormException();
-      } else {
-        switch (card_type) {
-          case "1":
-            System.out.println(" Card Type 1.'VISA' chosen.");
-            card_type = "VISA";
-            break;
-          case "2":
-            System.out.println(" Card Type 2.'Mastercard' chosen.");
-            card_type = "Mastercard";
-            break;
-          case "3":
-            System.out.println(" Card Type 3.'American Express' chosen.");
-            card_type = "American Express";
-            break;
-          case "4":
-            System.out.println(" Card Type 4.'Discover' chosen.");
-            card_type = "Discover";
-            break;
-          default:
-            throw new EmptyFormException();
-        }
-      }
-      System.out.println(card_type);
-      System.out.print(" Expiry Date as 'YYYY-MM': ");
-      String exp_date = userInput.nextLine();
-      if (exp_date.isEmpty()) {
-        throw new EmptyFormException();
-      }
-      exp_date += "-01";
-      System.out.println(exp_date);
-
-      Period period =
-          Period.between(LocalDate.now(), LocalDate.of(Integer.parseInt(exp_date.substring(0, 4)),
-              Integer.parseInt(exp_date.substring(5, 7)), 1));
-      if (period.getYears() < 0 || (period.getYears() == 0 && period.getMonths() <= 0)) {
-        throw new InvalidFormException();
-      }
-
-      // if card already in user list, don't add
-      if (checkUserHasCard(user, card_num)) {
-        System.out.println("Card already in list.");
-      } else {
-        user.addCard(card_num, card_type, exp_date);
-        System.out.println("Card added.");
-      }
-    } catch (EmptyFormException | InvalidFormException invalid) {
-      System.out.println("Invalid input. Going back.");
+    // if card already in user list, don't add
+    if (checkUserHasCard(user, card_num)) {
+      System.out.println("Card already in list.");
+    } else {
+      user.addCard(card_num, card_type, exp_date);
     }
   }
 
@@ -173,16 +172,18 @@ public class CreditInfo {
    */
   private static void removeCardForm(Scanner userInput, User user) throws EmptyFormException {
     // Get input
-    System.out.print("Input the number of the card you would like to remove: ");
-    int cardListNum = 0;
+    System.out.print("Input the number of the card you would like to remove or 0 to go back: ");
+    int cardNum = 0;
     try {
-      cardListNum = Integer.parseInt(userInput.nextLine());
+      cardNum = Integer.parseInt(userInput.nextLine());
     } catch (NoSuchElementException | NumberFormatException invalid) {
       throw new EmptyFormException();
     }
 
-    if (cardListNum > 0 && cardListNum <= user.getCardsSize()) {
-      user.deleteCard(cardListNum);
+    if (cardNum == 0) {
+      return;
+    } else if (cardNum > 0 && cardNum <= user.getNumCards()) {
+      user.deleteCard(cardNum - 1);
       System.out.println("Card Deleted.");
     } else {
       System.out.println("Invalid Input.");

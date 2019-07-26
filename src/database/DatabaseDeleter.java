@@ -6,12 +6,6 @@ import java.sql.SQLException;
 
 public class DatabaseDeleter {
 
-  /**
-   * Removes user from database, as well as any associated data: listings, creditInfo, bookings,
-   * comments.
-   * 
-   * @param user_id
-   */
   public static void deleteUser(int user_id) {
 
     // Get connection
@@ -43,12 +37,6 @@ public class DatabaseDeleter {
     }
   }
 
-  /**
-   * Removes credit card from database.
-   * 
-   * @param user_id
-   * @param card_id
-   */
   public static void deleteCard(int user_id, int card_id) {
     // Get connection
     Connection connection = null;
@@ -80,7 +68,7 @@ public class DatabaseDeleter {
     }
   }
 
-  public static void deleteListing(int user_id, int listing_id) {
+  public static void deleteListing(int listing_id) {
     // Get connection
     Connection connection = null;
     try {
@@ -91,12 +79,11 @@ public class DatabaseDeleter {
     }
 
     // delete
-    String sql = "DELETE FROM Listings WHERE user_id = ? AND listing_id = ?";
+    String sql = "DELETE FROM Listings WHERE listing_id = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-      preparedStatement.setInt(1, user_id);
-      preparedStatement.setInt(2, listing_id);
+      
+      preparedStatement.setInt(1, listing_id);
 
       preparedStatement.executeUpdate();
 
@@ -110,7 +97,5 @@ public class DatabaseDeleter {
       }
     }
   }
-
-
 
 }

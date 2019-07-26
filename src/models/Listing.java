@@ -6,28 +6,32 @@ import java.util.List;
 import java.util.Set;
 import database.DatabaseDeleter;
 import database.DatabaseInserter;
+import database.DatabaseSelector;
 
 public class Listing {
 
   private int listing_id;
   private int user_id;
-  private String listing_type; // ('Apartment', 'House', 'Secondary Unit', 'Bed and Breakfast', 'Boutique Hotel') 
+  // ('Apartment', 'House', 'Secondary Unit', 'Bed and Breakfast', 'Boutique Hotel')
+  private String listing_type;
   private int num_bedrooms;
   private int num_beds;
   private int num_bathrooms;
   private String title;
   private String description;
-  
-  private final Set<String> amenities = new HashSet<>();
+  private ListingAddress address;
 
+  private final Set<String> amenities = new HashSet<>();
   private final List<Comment> comments = new ArrayList<>();
   private final List<Availability> availabilities = new ArrayList<>();
-  
+
   /**
    * Only using variables referenced in the application
+   * 
    * @param sin
    */
-  public Listing(int listing_id, int user_id, String listing_type, int num_bedrooms, int num_beds, int num_bathrooms, String title, String description) {
+  public Listing(int listing_id, int user_id, String listing_type, int num_bedrooms, int num_beds,
+      int num_bathrooms, String title, String description) {
     this.listing_id = listing_id;
     this.user_id = user_id;
     this.listing_type = listing_type;
@@ -36,22 +40,57 @@ public class Listing {
     this.num_bathrooms = num_bathrooms;
     this.title = title;
     this.description = description;
+
+    // this.amenities.addAll(DatabaseSelector.getListingAmenities(getListing_id()));
+    // this.comments.addAll(DatabaseSelector.getListingComments(getListing_id()));
+    // this.availabilities.addAll(DatabaseSelector.getListingAvailabilities(getListing_id()));
   }
 
+  // TODO
   @Override
   public String toString() {
-    return ("");
-  }
-  
-  public void databaseDeleteListing() {
-    DatabaseDeleter.deleteListing(this.user_id, this.listing_id);
-  }
-  
-  public void databaseInsertListing(int listing_id, int user_id, String listing_type, int num_bedrooms, int num_beds, int num_bathrooms, String title, String description) {
-    DatabaseInserter.insertListing(listing_id, user_id, listing_type, num_bedrooms, num_beds, num_bathrooms, title, description);
+    String pop = (getTitle() + "\n" + getDescription() + "\n" + getListing_type() + "\n"
+        + "Number of Bedrooms: " + getNum_bedrooms() + "\n" + "Number of Beds: " + getNum_beds()
+        + "\n" + "Number of Bathrooms: " + getNum_bathrooms() + "\n" + getAddress().toString());
+    return pop;
   }
 
-  
+  public void databaseDeleteListing() {
+    DatabaseDeleter.deleteListing(this.listing_id);
+  }
+
+  /**
+   * Returns true if added
+   */
+  public boolean addListingAddress(String unit, String street, String city, String state,
+      String country, String zipCode, Double x, Double y) {
+    // insert into database
+    if (databaseInsertAddress(listing_id, unit, street, city, state, country, zipCode, x,
+        y) == true) {
+      this.address =
+          (new ListingAddress(listing_id, unit, street, city, state, country, zipCode, x, y));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if added
+   */
+  public boolean databaseInsertAddress(int listing_id, String unit, String street, String city,
+      String state, String country, String zipCode, Double x, Double y) {
+    // insert info to database and if row number returned, then valid
+    if (DatabaseInserter.insertAddress(listing_id, unit, street, city, state, country, zipCode, x,
+        y) > 0) {
+      System.out.println("Address Added!");
+      return true;
+    } else {
+      System.out.println(">>>\nYour address was not added. Please try again.\n>>>");
+      return false;
+    }
+  }
+
+
   // ** GETTERS/SETTERS **//
 
   public int getListing_id() {
@@ -118,6 +157,14 @@ public class Listing {
     this.description = description;
   }
 
+  public ListingAddress getAddress() {
+    return address;
+  }
+
+  public void setAddress(ListingAddress address) {
+    this.address = address;
+  }
+
   public Set<String> getAmenities() {
     return amenities;
   }
@@ -129,4 +176,10 @@ public class Listing {
   public List<Availability> getAvailabilities() {
     return availabilities;
   }
+
+//  public void addAmenities(Set<String> amenities2) {
+//    // TODO Auto-generated method stub
+//
+//  }
+
 }

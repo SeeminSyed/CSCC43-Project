@@ -5,7 +5,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import models.Booking;
 import models.Comment;
@@ -14,9 +13,6 @@ import models.Listing;
 
 public class DatabaseSelector {
 
-  /*
-   * Gets SIN from email and password. Returns -1 if not present.
-   */
   public static int getSIN(String email, String password) {
 
     int sin = -1;
@@ -29,7 +25,7 @@ public class DatabaseSelector {
       e.printStackTrace();
     }
 
-    // Insert
+    // select
     String sql = "SELECT sin FROM Users WHERE email = ? AND password = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -44,7 +40,7 @@ public class DatabaseSelector {
       results.close();
 
     } catch (SQLException sqlError) {
-      // sqlError.printStackTrace();
+       sqlError.printStackTrace();
     } finally {
       try {
         connection.close();
@@ -66,7 +62,7 @@ public class DatabaseSelector {
       e.printStackTrace();
     }
 
-    // Insert
+    // select
     String sql = "SELECT * FROM CreditInfo WHERE user_id = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -81,7 +77,7 @@ public class DatabaseSelector {
       results.close();
 
     } catch (SQLException sqlError) {
-      // sqlError.printStackTrace();
+       sqlError.printStackTrace();
     } finally {
       try {
         connection.close();
@@ -92,7 +88,7 @@ public class DatabaseSelector {
     return userCards;
   }
 
-  public static Collection<? extends Listing> getUserListings(int user_id) {
+  public static List<Listing> getUserListings(int user_id) {
     List<Listing> userListings = new ArrayList<>();
     // Get connection
     Connection connection = null;
@@ -103,7 +99,7 @@ public class DatabaseSelector {
       e.printStackTrace();
     }
 
-    // Insert
+    // select
     String sql = "SELECT * FROM Listings WHERE user_id = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -112,21 +108,15 @@ public class DatabaseSelector {
 
       ResultSet results = preparedStatement.executeQuery();
       while (results.next()) {
-        userListings.add(
-            new Listing(
-            results.getInt("listing_id"), 
-            user_id,
-            results.getString("listing_type"), 
-            results.getInt("num_bedrooms"),
-            results.getInt("num_beds"), 
-            results.getInt("num_bathrooms"), 
-            results.getString("title"),
+        userListings.add(new Listing(results.getInt("listing_id"), user_id,
+            results.getString("listing_type"), results.getInt("num_bedrooms"),
+            results.getInt("num_beds"), results.getInt("num_bathrooms"), results.getString("title"),
             results.getString("description")));
       }
       results.close();
 
     } catch (SQLException sqlError) {
-      // sqlError.printStackTrace();
+       sqlError.printStackTrace();
     } finally {
       try {
         connection.close();
@@ -135,17 +125,6 @@ public class DatabaseSelector {
       }
     }
     return userListings;
-  }
-
-
-  public static Collection<? extends Booking> getUserBookings(int user_id) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  public static Collection<? extends Comment> getUserComments(int user_id) {
-    // TODO Auto-generated method stub
-    return null;
   }
 
 }
