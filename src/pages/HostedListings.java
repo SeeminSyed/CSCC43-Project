@@ -1,11 +1,15 @@
 package pages;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.Set;
 import database.DatabaseSelector;
+import models.Availability;
+import models.Booking;
 import models.Listing;
 import models.ListingComment;
 import models.User;
@@ -82,9 +86,7 @@ public class HostedListings {
     } while (userChoice != 0);
   }
 
-
-  private static void addListingForm(Scanner userInput, User user)
-      throws EmptyFormException, NoSuchElementException {
+  private static void addListingForm(Scanner userInput, User user) throws EmptyFormException {
     String userChoice;
     Double x;
     Double y;
@@ -217,16 +219,14 @@ public class HostedListings {
     // add amenities
     newListing.addListingAmenities(chosenAmenities);
 
-    // get availability TODO
-    // System.out.println(
-    // "Add availability for the listing. (The listing cannot be booked until you provide its
-    // availability)");
-    // System.out.print(" Option: ");
-    // userChoice = userInput.nextLine();
-    // if (userChoice.contentEquals("1")) {
-    // chosenAmenities = viewAddAmenities(user, userInput);
-    // }
-    // add availability
+    // get availability for listing
+    System.out.println(
+        "Add availability for the listing. (The listing cannot be booked until you provide its availability)");
+    try {
+      addAvailabilityForm(userInput, newListing);
+    } catch (InvalidFormException rejected) {
+      System.out.println("Invalid Input.");
+    }
   }
 
   /**
@@ -240,7 +240,7 @@ public class HostedListings {
     int i = 0;
     for (String amenity : amenities) {
       i++;
-      System.out.println(" " + i + ". " + amenity + " -- $" + user.getAmenityPrice(amenity));
+      System.out.println(" " + i + ". " + amenity + " -- $" + user.getAmenityPrice(amenity)); // TODO
     }
 
     System.out.println(
@@ -267,7 +267,7 @@ public class HostedListings {
   /**
    * Returns true if the address is not in the database
    */
-  private static boolean newAddress(String unit, Double x, Double y) { // TODO
+  private static boolean newAddress(String unit, Double x, Double y) {
     return !(DatabaseSelector.getAddress(unit, x, y));
   }
 
@@ -296,9 +296,9 @@ public class HostedListings {
             userChoice = 0;
           }
           break;
-        case 2: // TODOS
-          // view availability -> add/delete/edit->price/start/end,
-          // viewListingAvailabilities(userInput, user, listing);
+        case 2: // TODO
+          // view availability -> add/delete/edit->price/start/end
+          viewListingAvailabilities(userInput, user, listing);
           break;
         case 3:
           // view comments
@@ -306,7 +306,7 @@ public class HostedListings {
           break;
         case 4:
           // view bookings -> cancel
-          // viewListingBookings(userInput, user, listing);
+          viewListingBookings(userInput, user, listing);
           break;
         case 0:
           System.out.println("Going Back... ");
@@ -316,6 +316,216 @@ public class HostedListings {
           break;
       }
     } while (userChoice != 0);
+  }
+
+  private static void viewListingAvailabilities(Scanner userInput, User user, Listing listing) {
+    List<Availability> listingAvailabilities;
+    int userChoice;
+    int i = 0;
+    // loop till exit
+    do {
+      i = 0;
+      listingAvailabilities = listing.getAvailabilities();
+      System.out.println(">>>");
+      for (Availability availability : listingAvailabilities) {
+        i++;
+        System.out.println(i + ". " + availability.toString());
+        System.out.println("------------------------------------------------");
+      }
+      System.out.println(">>>");
+
+      // view availability -> add/delete/edit->price/start/end,
+      System.out
+          .print(" 1. Add Availability\n" + " 2. Edit/Delete Availability\n" + " 0. Go Back \n");
+      System.out.print("Enter the option number: ");
+      try {
+        userChoice = Integer.parseInt(userInput.nextLine());
+      } catch (NoSuchElementException | NumberFormatException invalid) {
+        userChoice = 0;
+      }
+
+      // add, delete/(edit->price/startDate/endDate), go back
+      switch (userChoice) {
+        case 1:
+          System.out.println("To Add Availability... ");
+          try {
+            addAvailabilityForm(userInput, listing);
+          } catch (InvalidFormException e) {
+            System.out.println("Invalid input. Going back.");
+          }
+          break;
+        case 2: // TODO
+          // pick availability to modify or delete
+          userChoice = modifyAvailabilityForm(userInput, listing);
+          break;
+        case 0:
+          System.out.println("Going Back... ");
+          break;
+        default:
+          System.out.println(">>> Command not recognized. Please try again. >>>");
+          break;
+      }
+    } while (userChoice != 0);
+  }
+
+
+  private static void addAvailabilityForm(Scanner userInput, Listing listing)
+      throws InvalidFormException {
+
+    int listingUseNum = 0;
+    String listingUse;
+    String start = "";
+    String end = "";
+    Double price = 0.0;
+
+    long p;
+    LocalDate startDate = LocalDate.now();
+    LocalDate endDate = LocalDate.now();
+
+    // get coordinates
+    System.out.println("Please input the following or nothing to exit:");
+    System.out.print(" Allowed use for renter 1. 'Full', 2. 'Private Room', 3. 'Shared' : ");
+    try {
+      listingUseNum = Integer.parseInt(userInput.nextLine());
+      switch (listingUseNum) {
+        case 1:
+          listingUse = "Full";
+          break;
+        case 2:
+          listingUse = "Private Room";
+          break;
+        case 3:
+          listingUse = "Shared";
+          break;
+        default:
+          throw new InvalidFormException();
+      }
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    }
+
+    System.out.print(" Start Date as 'YYYY-MM-DD' : ");
+    try {
+      start = userInput.nextLine();
+      startDate = LocalDate.of(Integer.parseInt(start.substring(0, 4)),
+          Integer.parseInt(start.substring(5, 7)), Integer.parseInt(start.substring(8)));
+      p = ChronoUnit.DAYS.between(LocalDate.now(), startDate);
+      if (p <= 0) {
+        System.out.print("Needs to be a future date.");
+        throw new InvalidFormException();
+      }
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    } catch (IndexOutOfBoundsException invalid) {
+      System.out.print("Invalid format: 'YYYY-MM-DD'");
+    }
+
+    System.out.print(" End Date as 'YYYY-MM-DD' : ");
+    try {
+      end = userInput.nextLine();
+      endDate = LocalDate.of(Integer.parseInt(end.substring(0, 4)),
+          Integer.parseInt(end.substring(5, 7)), Integer.parseInt(end.substring(8)));
+      p = ChronoUnit.DAYS.between(startDate, endDate);
+      if (p <= 0) {
+        System.out.print("Needs to be a date after the start date.");
+        throw new InvalidFormException();
+      }
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    } catch (IndexOutOfBoundsException invalid) {
+      System.out.print("Invalid format: 'YYYY-MM-DD'");
+    }
+
+    // Double price;
+    System.out.print(" Price: (Suggested price: " + listing.getSuggestedPrice() + ")");
+    try {
+      price = Double.parseDouble(userInput.nextLine());
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    }
+
+    listing.addListingAvailability(listingUse, start, end, price, true);
+  }
+
+
+  private static int modifyAvailabilityForm(Scanner userInput, Listing listing) {
+    int out = 2;
+    int availabilityNum = 0;
+    int userChoice = 0;
+    System.out
+        .print("Input the number of the availability you would like to modify or 0 to go back: ");
+    try {
+      availabilityNum = Integer.parseInt(userInput.nextLine());
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      availabilityNum = -1;
+    }
+
+    if (availabilityNum > 0 && availabilityNum <= listing.getNumAvailability()) {
+      System.out.print(" 1. Delete \n 2. Edit \n 0. Go Back ");
+      try {
+        userChoice = Integer.parseInt(userInput.nextLine());
+      } catch (NoSuchElementException | NumberFormatException invalid) {
+        userChoice = -1;
+      }
+      if (userChoice == 1) { // delete
+        listing.deleteAvailabilityNum(availabilityNum - 1);
+        System.out.println("Availability Deleted.");
+        out = 0;
+      } else if (userChoice == 2) { // edit TODO
+      } else if (userChoice == 0) { // go back
+        System.out.println("Going back...");
+      } else {
+        System.out.println("Invalid Input.");
+      }
+    } else if (availabilityNum != 0) {
+      System.out.println("Invalid Input.");
+    }
+    return out;
+  }
+
+
+  private static void viewListingBookings(Scanner userInput, User user, Listing listing) {
+    // get user's bookings
+    List<Booking> listingBookings;
+    int userChoice;
+    int i = 0;
+    // loop till exit
+    do {
+      i = 0;
+      listingBookings = listing.getBookings();
+      System.out.println(">>>");
+      for (Booking booking : listingBookings) {
+        i++;
+        System.out.println(i + ". " + booking.toString());
+        System.out.println("------------------------------------------------");
+      }
+      System.out.println(">>>");
+
+      // add new booking
+      System.out.print(" To cancel a booking, enter the option number or 0 to go back\n");
+      System.out.print("Enter the option number: ");
+
+      try {
+        userChoice = Integer.parseInt(userInput.nextLine());
+      } catch (NoSuchElementException | NumberFormatException invalid) {
+        System.out.println("Invalid Input.");
+        userChoice = -1;
+      }
+
+      if (userChoice > 0 && userChoice <= listing.getNumBookings()) {
+        cancelBooking(userInput, listing, listing.getBookings().get(userChoice).getBookingId());
+      } else if (userChoice == 0) {
+        System.out.println("Going Back... ");
+      } else {
+        System.out.println(">>> Command not recognized. Please try again. >>>");
+      }
+    } while (userChoice != 0);
+
+  }
+
+  private static void cancelBooking(Scanner userInput, Listing listing, int booking_id) {
+    listing.deleteBooking(booking_id);
+    System.out.println("Booking Deleted.");
   }
 
   private static void viewListingComments(Scanner userInput, User user, Listing listing) {
@@ -328,48 +538,33 @@ public class HostedListings {
     System.out.println(">>>");
   }
 
-
   /**
    * Returns true if deleted
    */
-  private static boolean removeListingForm(Scanner userInput, User user) throws EmptyFormException {
+  private static boolean removeListingForm(Scanner userInput, User user) {
     // Get input
     boolean del = false;
-    System.out.print("Input the number of the Listing you would like to remove or 0 to go back: ");
+    System.out.print("Input the number of the listing you would like to remove or 0 to go back: ");
     int listingNum = 0;
     try {
       listingNum = Integer.parseInt(userInput.nextLine());
     } catch (NoSuchElementException | NumberFormatException invalid) {
-      throw new EmptyFormException();
+      listingNum = -1;
     }
 
     if (listingNum == 0) {
       del = false;
     } else if (listingNum > 0 && listingNum <= user.getNumListings()) {
-      // if valid bookings then can't delete
-      if (validBookingsOnListing(listingNum - 1)) {
-        System.out.println("Listing Cannot be deleted as someone is currently renting the place.");
-        del = false;
-      } else {
-        user.deleteListing(listingNum - 1);
-        System.out.println("Listing Deleted.");
-        del = true;
-
-      }
+      // "The host however can cancel a booking any time and similarly the renter can cancel as
+      // well."
+      user.deleteListing(listingNum - 1);
+      System.out.println("Listing Deleted.");
+      del = true;
     } else {
       System.out.println("Invalid Input.");
       del = false;
     }
     return del;
-  }
-
-  /**
-   * returns true if there are active bookings on the listing
-   * 
-   */
-  private static boolean validBookingsOnListing(int listingListNum) { // TODO
-
-    return false;
   }
 
 }

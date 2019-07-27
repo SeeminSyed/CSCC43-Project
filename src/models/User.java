@@ -10,6 +10,7 @@ public class User {
   private int sin;
   private String email;
   private String password;
+  private String name;
 
   // complex info
   private final List<Listing> listings = new ArrayList<>();
@@ -21,6 +22,7 @@ public class User {
     this.sin = sin;
     this.email = email;
     this.password = password;
+    this.name = DatabaseSelector.getUserName(getSin());
 
     this.cards.addAll(DatabaseSelector.getUserCards(getSin()));
     // this.bookings.addAll(DatabaseSelector.getUserBookings(getSin()));
@@ -134,6 +136,14 @@ public class User {
     this.password = password;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
   public List<Listing> getListings() {
     return listings;
   }
@@ -167,7 +177,8 @@ public class User {
   }
 
   /**
-   * Returns suggested price increase of adding an amenity to a listing based on comparisons with other listings TODO
+   * Returns suggested price increase of adding an amenity to a listing based on comparisons with
+   * other listings TODO
    */
   public String getAmenityPrice(String amenity) {
     return "TODO";

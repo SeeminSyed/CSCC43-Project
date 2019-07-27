@@ -2,10 +2,11 @@ package pages;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
-import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import database.*;
+import database.DatabaseInserter;
+import database.DatabaseSelector;
 
 public class Main {
 
@@ -93,12 +94,10 @@ public class Main {
           " Date of birth as 'YYYY-MM-DD' (You must be at least 18 years of age to access this service): ");
       dob = userInput.nextLine();
       // Check >18yo
-      Period period =
-          Period.between(
-              LocalDate.of(Integer.parseInt(dob.substring(0, 4)),
-                  Integer.parseInt(dob.substring(5, 7)), Integer.parseInt(dob.substring(8))),
-              LocalDate.now());
-      if (period.getYears() < 18) {
+      LocalDate date = LocalDate.of(Integer.parseInt(dob.substring(0, 4)),
+          Integer.parseInt(dob.substring(5, 7)), Integer.parseInt(dob.substring(8)));
+      long p = ChronoUnit.DAYS.between(LocalDate.now(), date);
+      if (p < (18*365+(18%4))) {
         throw new InvalidFormException();
       }
 

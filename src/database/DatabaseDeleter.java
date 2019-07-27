@@ -98,4 +98,66 @@ public class DatabaseDeleter {
     }
   }
 
+
+  public static void deleteBooking(int booking_id) {
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // delete
+    String sql = "DELETE FROM Bookings WHERE bookings_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      
+      preparedStatement.setInt(1, booking_id);
+
+      preparedStatement.executeUpdate();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+  }
+
+  public static void deleteAvailability(int availability_id) {
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // delete
+    String sql = "DELETE FROM Availability WHERE availability_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      
+      preparedStatement.setInt(1, availability_id);
+
+      preparedStatement.executeUpdate();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    
+  }
+
 }

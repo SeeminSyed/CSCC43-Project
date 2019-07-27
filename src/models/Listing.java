@@ -24,6 +24,7 @@ public class Listing {
   private final Set<String> amenities = new HashSet<>();
   private final List<ListingComment> comments = new ArrayList<>();
   private final List<Availability> availabilities = new ArrayList<>();
+  private final List<Booking> bookings = new ArrayList<>();
 
   /**
    * Only using variables referenced in the application
@@ -41,30 +42,48 @@ public class Listing {
     this.title = title;
     this.description = description;
 
-     this.amenities.addAll(DatabaseSelector.getListingAmenities(getListingId()));
-     this.comments.addAll(DatabaseSelector.getListingComments(getListingId()));
-    // this.availabilities.addAll(DatabaseSelector.getListingAvailabilities(getListingId()));
+    this.amenities.addAll(DatabaseSelector.getListingAmenities(getListingId()));
+    this.comments.addAll(DatabaseSelector.getListingComments(getListingId()));
+    this.availabilities.addAll(DatabaseSelector.getListingAvailabilities(getListingId()));
+    this.bookings.addAll(DatabaseSelector.getListingBookings(getUserId(), getListingId()));
   }
 
   public String toStringBasic() {
     String pop = (getTitle() + "\n" + getDescription() + "\n" + getAddress().toString());
     return pop;
   }
-  
+
   @Override
   public String toString() {
-    String pop = (getTitle() + "\n" + getDescription() + "\n" + getListingType() + "\n"
+    return (getTitle() + "\n" + getDescription() + "\n" + getListingType() + "\n"
         + "Number of Bedrooms: " + getNumBedrooms() + "\n" + "Number of Beds: " + getNumBeds()
-        + "\n" + "Number of Bathrooms: " + getNumBathrooms() + "\n" + getAmenities().toString() + "\n" + getAddress().toString());
-    return pop;
+        + "\n" + "Number of Bathrooms: " + getNumBathrooms() + "\n" + getAmenities().toString()
+        + "\n" + getAddress().toString());
   }
+
   public void databaseDeleteListing() {
     DatabaseDeleter.deleteListing(this.listingId);
   }
 
+
+  public void deleteAvailabilityNum(int availabilityId) {
+    // delete from database
+    this.availabilities.get(availabilityId).databaseDeleteAvailability();
+    // delete from user object
+    this.availabilities.remove(availabilityId);
+
+  }
+
+  public void deleteBooking(int bookingId) {
+    // delete from database
+    this.bookings.get(bookingId).databaseDeleteBooking();
+    // delete from user object
+    this.bookings.remove(bookingId);
+  }
+
   /**
    * Returns true if added
-   */  
+   */
   public boolean addListingAmenities(Set<String> amenities) {
     // insert into database
     if (databaseInsertListingAmenities(this.getListingId(), amenities) == true) {
@@ -73,7 +92,7 @@ public class Listing {
     }
     return false;
   }
-  
+
   /**
    * Returns true if added
    */
@@ -87,7 +106,7 @@ public class Listing {
       return false;
     }
   }
-  
+
   /**
    * Returns true if added
    */
@@ -96,11 +115,44 @@ public class Listing {
     // insert into database
     if (databaseInsertAddress(this.getListingId(), unit, street, city, state, country, zipCode, x,
         y) == true) {
-      this.address =
-          (new ListingAddress(this.getListingId(), unit, street, city, state, country, zipCode, x, y));
+      this.address = (new ListingAddress(this.getListingId(), unit, street, city, state, country,
+          zipCode, x, y));
       return true;
     }
     return false;
+  }
+
+  /**
+   * Returns true if added
+   */
+  public boolean addListingAvailability(String listingUse, String startDate, String endDate,
+      Double price, boolean available) {
+    // insert into database
+    int availability_id =
+        databaseInsertListingAvailability(listingUse, startDate, endDate, price, available, getListingId());
+
+    // add to user object
+    if (availability_id > 0) {
+      this.availabilities
+          .add(new Availability(availability_id, listingUse, startDate, endDate, price, available, getListingId()));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns listing_id if added
+   */
+  private int databaseInsertListingAvailability(String listingUse, String startDate, String endDate,
+      Double price, boolean available, int listing_id) {
+    int availability_id = 0;
+    // insert info to database and if row number returned, then valid
+    if ((availability_id = DatabaseInserter.insertListingAvailability(listingUse, startDate, endDate, price, available, listing_id)) > 0) {
+      System.out.println("Availability Added!");
+    } else {
+      System.out.println(">>> \nYour availability was not added. Please try again.\n>>>");
+    }
+    return availability_id;
   }
 
   /**
@@ -204,6 +256,23 @@ public class Listing {
 
   public List<Availability> getAvailabilities() {
     return availabilities;
+  }
+
+  public List<Booking> getBookings() {
+    return bookings;
+  }
+
+  public int getNumBookings() {
+    return getBookings().size();
+  }
+
+  public int getNumAvailability() {
+    return getAvailabilities().size();
+  }
+
+  public String getSuggestedPrice() {
+    // loop through user.getAmenityPricing()
+    return null;
   }
 
 }

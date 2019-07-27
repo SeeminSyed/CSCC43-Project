@@ -24,7 +24,7 @@ public class UserHome {
    * @param user
    */
   private static void userOptions(Scanner userInput, User user) {
-    System.out.println("Hello" + /*", " + user.name + */ "!");
+    System.out.println("Hello" + ", " + user.getName() + "!");
     int userChoice;
 
     // loop till exit

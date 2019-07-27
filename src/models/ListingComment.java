@@ -1,5 +1,7 @@
 package models;
 
+import database.DatabaseSelector;
+
 public class ListingComment {
 
   private int bookingId;
@@ -20,7 +22,11 @@ public class ListingComment {
 
   @Override
   public String toString() {
-    return (getRenterId() + "   " + getRating() + " -- " + getDate() + "\n " + getCommentBody());
+    return (getRenterName() + "   " + getRating() + " -- " + getDate() + "\n " + getCommentBody());
+  }
+
+  private String getRenterName() {
+    return DatabaseSelector.getUserName(getRenterId());
   }
 
   public int getBookingId() {

@@ -88,6 +88,7 @@ public class DatabaseInserter {
   public static int insertListing(int user_id, String listing_type, int num_bedrooms, int num_beds,
       int num_bathrooms, String title, String description) {
     int row = -1;
+    int listing_id = -1;
     // Get connection
     Connection connection = null;
     try {
@@ -115,14 +116,9 @@ public class DatabaseInserter {
       row = preparedStatement.executeUpdate();
 
       if (row > 0) {
-        // select
-        sql =
-            "SELECT * FROM Listings WHERE user_id = ?, listing_type = ?, num_bedrooms = ?, num_beds = ?, num_bathrooms = ?, title = ?, description = ?";
-        preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        preparedStatement.setInt(1, user_id);
         ResultSet results = preparedStatement.getGeneratedKeys();
         results.next();
-        row = results.getInt(1);
+        listing_id = results.getInt(1);
       }
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
@@ -133,7 +129,7 @@ public class DatabaseInserter {
         sqlError.printStackTrace();
       }
     }
-    return row;
+    return listing_id;
   }
 
   public static int insertAddress(int listing_id, String unit, String street, String city,
@@ -210,6 +206,52 @@ public class DatabaseInserter {
       }
     }
     return row;
+  }
+
+  public static int insertListingAvailability(String listing_use, String start_date,
+      String end_date, Double price, boolean available, int listing_id) {
+    int row = -1;
+    int availability_id = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // Insert
+    String sql =
+        "INSERT INTO Availability(listing_use, start_date, end_date, price, available, listing_id) VALUES(?,?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+
+      preparedStatement.setString(1, listing_use);
+      preparedStatement.setString(2, start_date);
+      preparedStatement.setString(3, end_date);
+      preparedStatement.setDouble(4, price);
+      preparedStatement.setBoolean(5, available);
+      preparedStatement.setInt(6, listing_id);
+
+      row = preparedStatement.executeUpdate();
+
+      if (row > 0) {
+        ResultSet results = preparedStatement.getGeneratedKeys();
+        results.next();
+        availability_id = results.getInt(1);
+      }
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return availability_id;
   }
 
 }

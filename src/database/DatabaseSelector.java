@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import models.Availability;
+import models.Booking;
 import models.CreditCard;
 import models.Listing;
 import models.ListingComment;
@@ -312,6 +314,119 @@ public class DatabaseSelector {
       }
     }
     return present;
+  }
+
+  public static String getUserName(int renterId) {
+    String name = "";
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT name FROM Users WHERE user_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, renterId);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        name = results.getString("name");
+      }
+      results.close();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return name;
+  }
+
+  public static List<Booking> getListingBookings(int userId, int listingId) {
+    List<Booking> bookings = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM Bookings WHERE listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listingId);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        bookings.add(new Booking(results.getInt("booking_id"), results.getString("start_date"),
+            results.getString("end_date"), results.getString("status"), listingId, userId,
+            results.getInt("card_num")));
+      }
+      results.close();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return bookings;
+  }
+
+  public static List<Availability> getListingAvailabilities(int listingId) {
+    List<Availability> availability = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM Availability WHERE listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listingId);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        availability.add(
+            new Availability(results.getInt("availability_id"), results.getString("listing_use"),
+                results.getString("start_date"), results.getString("end_date"),
+                results.getDouble("price"), results.getBoolean("available"), listingId));
+      }
+      results.close();
+
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return availability;
   }
 
 
