@@ -110,6 +110,13 @@ public class User {
     return listing_id;
   }
 
+  public void deleteUserBooking(int bookingId) {
+    // delete from database
+    this.bookings.get(bookingId).databaseDeleteBooking();
+    // delete from user object
+    this.bookings.remove(bookingId);
+  }
+
   // ** GETTERS/SETTERS **//
 
   public int getSin() {

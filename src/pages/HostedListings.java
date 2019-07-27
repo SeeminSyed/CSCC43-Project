@@ -296,7 +296,7 @@ public class HostedListings {
             userChoice = 0;
           }
           break;
-        case 2: // TODO
+        case 2:
           // view availability -> add/delete/edit->price/start/end
           viewListingAvailabilities(userInput, user, listing);
           break;
@@ -305,7 +305,7 @@ public class HostedListings {
           viewListingComments(userInput, user, listing);
           break;
         case 4:
-          // view bookings -> cancel
+          // view bookings -> cancel/(comment on user) TODO
           viewListingBookings(userInput, user, listing);
           break;
         case 0:
@@ -354,7 +354,7 @@ public class HostedListings {
             System.out.println("Invalid input. Going back.");
           }
           break;
-        case 2: // TODO
+        case 2:
           // pick availability to modify or delete
           userChoice = modifyAvailabilityForm(userInput, listing);
           break;
@@ -367,7 +367,6 @@ public class HostedListings {
       }
     } while (userChoice != 0);
   }
-
 
   private static void addAvailabilityForm(Scanner userInput, Listing listing)
       throws InvalidFormException {
@@ -447,7 +446,6 @@ public class HostedListings {
     listing.addListingAvailability(listingUse, start, end, price, true);
   }
 
-
   private static int modifyAvailabilityForm(Scanner userInput, Listing listing) {
     int out = 2;
     int availabilityNum = 0;
@@ -471,7 +469,7 @@ public class HostedListings {
         listing.deleteAvailabilityNum(availabilityNum - 1);
         System.out.println("Availability Deleted.");
         out = 0;
-      } else if (userChoice == 2) { // edit TODO
+      } else if (userChoice == 2) { // edit->price/start/end TODO
       } else if (userChoice == 0) { // go back
         System.out.println("Going back...");
       } else {
@@ -483,11 +481,11 @@ public class HostedListings {
     return out;
   }
 
-
   private static void viewListingBookings(Scanner userInput, User user, Listing listing) {
     // get user's bookings
     List<Booking> listingBookings;
     int userChoice;
+    int bookingListNum;
     int i = 0;
     // loop till exit
     do {
@@ -501,8 +499,13 @@ public class HostedListings {
       }
       System.out.println(">>>");
 
-      // add new booking
-      System.out.print(" To cancel a booking, enter the option number or 0 to go back\n");
+      System.out.print(
+          // cancel booking
+          " 1. Cancel a Booking\n"
+              // comment user
+              + " 2. Comment on the renter\n"
+              // Back
+              + " 0. Go Back \n");
       System.out.print("Enter the option number: ");
 
       try {
@@ -510,22 +513,39 @@ public class HostedListings {
       } catch (NoSuchElementException | NumberFormatException invalid) {
         System.out.println("Invalid Input.");
         userChoice = -1;
+        continue;
       }
+      // cancel, comment, back
+      switch (userChoice) {
+        case 1:
+          System.out.print("Choose by option number which booking to cancel: ");
+          try {
+            bookingListNum = Integer.parseInt(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            System.out.println("Invalid Input.");
+            bookingListNum = 0;
+            userChoice = 0;
+          }
 
-      if (userChoice > 0 && userChoice <= listing.getNumBookings()) {
-        cancelBooking(userInput, listing, listing.getBookings().get(userChoice).getBookingId());
-      } else if (userChoice == 0) {
-        System.out.println("Going Back... ");
-      } else {
-        System.out.println(">>> Command not recognized. Please try again. >>>");
+          if (userChoice > 0 && userChoice <= listing.getNumBookings()) {
+            listing.deleteBooking(listing.getBookings().get(bookingListNum - 1).getBookingId());
+            System.out.println("Booking Deleted.");
+          } else {
+            System.out.println(">>> Command not recognized. Please try again. >>>");
+          }
+          break;
+        case 2: // user comment TODO
+          
+          break;
+        case 0:
+          System.out.println("Going Back... ");
+          break;
+        default:
+          System.out.println(">>> Command not recognized. Please try again. >>>");
+          break;
       }
     } while (userChoice != 0);
 
-  }
-
-  private static void cancelBooking(Scanner userInput, Listing listing, int booking_id) {
-    listing.deleteBooking(booking_id);
-    System.out.println("Booking Deleted.");
   }
 
   private static void viewListingComments(Scanner userInput, User user, Listing listing) {

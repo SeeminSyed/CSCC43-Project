@@ -69,7 +69,7 @@ public class Listing {
   public void deleteAvailabilityNum(int availabilityId) {
     // delete from database
     this.availabilities.get(availabilityId).databaseDeleteAvailability();
-    // delete from user object
+    // delete from object
     this.availabilities.remove(availabilityId);
 
   }
@@ -77,7 +77,7 @@ public class Listing {
   public void deleteBooking(int bookingId) {
     // delete from database
     this.bookings.get(bookingId).databaseDeleteBooking();
-    // delete from user object
+    // delete from object
     this.bookings.remove(bookingId);
   }
 

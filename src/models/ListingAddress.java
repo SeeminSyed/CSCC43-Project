@@ -24,7 +24,6 @@ public class ListingAddress {
     this.y = y;
   }
 
-  // TODO
   @Override
   public String toString() {
     return (getStreet() + ", " + getUnit() + ", " + getCity() + ", " + getCountry() + ", "

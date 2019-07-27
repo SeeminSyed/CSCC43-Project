@@ -83,10 +83,6 @@ public class CreditInfo {
    * 
    * form to add a new card
    * 
-   * @param userInput
-   * @param user
-   * @throws EmptyFormException
-   * @throws InvalidFormException
    */
   private static void addCardForm(Scanner userInput, User user)
       throws EmptyFormException, InvalidFormException {
@@ -166,9 +162,6 @@ public class CreditInfo {
   /**
    * Form to delete card info
    * 
-   * @param userInput
-   * @param user
-   * @throws EmptyFormException
    */
   private static void removeCardForm(Scanner userInput, User user) throws EmptyFormException {
     // Get input

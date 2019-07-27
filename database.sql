@@ -196,7 +196,7 @@ CREATE TABLE UserComments (
 
   commenter_id INT UNSIGNED NOT NULL,
   commentee_id INT UNSIGNED NOT NULL,
-  listing_id INT UNSIGNED NOT NULL,
+  -- listing_id INT UNSIGNED NOT NULL,
   booking_id INT UNSIGNED NOT NULL,
   rating INT UNSIGNED NOT NULL,
 
@@ -207,7 +207,7 @@ CREATE TABLE UserComments (
 
   PRIMARY KEY (booking_id),
 
-  FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
+  -- FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
   FOREIGN KEY (commenter_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (commentee_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE,

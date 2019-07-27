@@ -1,5 +1,6 @@
 package pages;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import models.*;
@@ -37,10 +38,12 @@ public class UserHome {
               // Will show hosted properties: can add/edit/delete. Per property, check bookings: can
               // edit/cancel
               + " 3. Check Your Listed Properties\n"
+              // view comments
+              + " 4. Check Your Comments\n"
               // Will show list of credit cards: can add/delete
-              + " 4. Check Payment Information\n"
+              + " 5. Check Payment Information\n"
               // Delete account and associated info
-              + " 5. Delete Your Account\n"
+              + " 6. Delete Your Account\n"
               // Sign out
               + " 0. Sign Out \n");
       System.out.print("Enter the option number: ");
@@ -54,22 +57,26 @@ public class UserHome {
       // sign up, sign in or exit
       switch (userChoice) {
         case 1:
-          System.out.println("Showing Property Listings... ");
-          // signUp(userInput);
+          System.out.println("Showing Property Listings Search... ");
+          // signUp(userInput); // TODO
           break;
         case 2:
           System.out.println("Showing Your Bookings... ");
-          // addPropertyForm(userInput, user);
+          viewUserBookings(userInput, user);
           break;
         case 3:
           System.out.println("Showing Your Listed Properties... ");
           HostedListings.main(userInput, user);
           break;
         case 4:
+          System.out.println("Showing Comments... ");
+          viewUserComments(user);
+          break;
+        case 5:
           System.out.println("Showing Credit Information... ");
           CreditInfo.main(userInput, user);
           break;
-        case 5:
+        case 6:
           System.out.println("Are you sure you would like to delete your account? ");
           // if successful, userChoice = 0
           userChoice = deleteAccountForm(userInput, user);
@@ -83,6 +90,90 @@ public class UserHome {
       }
     } while (userChoice != 0);
   }
+
+  private static void viewUserComments(User user) {
+    List<Comment> userComments;
+    userComments = user.getComments();
+    System.out.println(">>>");
+    for (Comment comment : userComments) {
+      System.out.println(comment.toString());
+      System.out.println("------------------------------------------------");
+    }
+    System.out.println(">>>");
+  }
+
+
+  private static void viewUserBookings(Scanner userInput, User user) {
+      // get user's bookings
+      List<Booking> userBookings;
+      int userChoice;
+      int bookingListNum;
+      int i = 0;
+      // loop till exit
+      do {
+        i = 0;
+        userBookings = user.getBookings();
+        System.out.println(">>>");
+        for (Booking booking : userBookings) {
+          i++;
+          System.out.println(i + ". " + booking.toString());
+          System.out.println("------------------------------------------------");
+        }
+        System.out.println(">>>");
+
+        System.out.print(
+            // cancel booking
+            " 1. Cancel a Booking\n"
+                // comment listing owner
+                + " 2. Comment on the Listing Owner\n"
+                // comment listing
+                + " 3. Comment on the Listing\n"
+                // Back
+                + " 0. Go Back \n");
+        System.out.print("Enter the option number: ");
+
+        try {
+          userChoice = Integer.parseInt(userInput.nextLine());
+        } catch (NoSuchElementException | NumberFormatException invalid) {
+          System.out.println("Invalid Input.");
+          userChoice = -1;
+          continue;
+        }
+        // cancel, comment user, comment listing, back
+        switch (userChoice) {
+          case 1:
+            System.out.print("Choose by option number which booking to cancel: ");
+            try {
+              bookingListNum = Integer.parseInt(userInput.nextLine());
+            } catch (NoSuchElementException | NumberFormatException invalid) {
+              System.out.println("Invalid Input.");
+              bookingListNum = 0;
+              userChoice = 0;
+            }
+            if (userChoice > 0 && userChoice <= user.getNumBookings()) {
+              user.deleteUserBooking(user.getBookings().get(bookingListNum - 1).getBookingId());
+              System.out.println("Booking Deleted.");
+            } else {
+              System.out.println(">>> Command not recognized. Please try again. >>>");
+            }
+            break;
+          case 2: // user comment TODO
+            
+            break;
+          case 3: // listing comment TODO
+            
+            break;
+          case 0:
+            System.out.println("Going Back... ");
+            break;
+          default:
+            System.out.println(">>> Command not recognized. Please try again. >>>");
+            break;
+        }
+      } while (userChoice != 0);
+    }
+
+
 
   /**
    * 
