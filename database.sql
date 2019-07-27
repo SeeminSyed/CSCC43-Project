@@ -80,31 +80,28 @@ CREATE TABLE Address (
 );
 
 
--- DROP TABLE IF EXISTS Amenities CASCADE;
+DROP TABLE IF EXISTS Amenities CASCADE;
 CREATE TABLE Amenities (
-  listing_id INT UNSIGNED NOT NULL,
-  amenity ENUM('Essentials',
-               'WiFi',
-               'Shampoo',
-               'Closet/Drawers',
-               'TV',
-               'Heat',
-               'AC',
-               'Desk/Workspace',
-               'Fireplace',
-               'Iron',
-               'Hair Dryer',
-               'Breakfast, Coffee, Tea',
-               'Smoke Detector',
-               'Carbon Monoxide Detector',
-               'First Aid Kit',
-               'Fire Extinguisher',
-               'Locks on Bedrooms'),
+  amenity_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  amenity VARCHAR(50) NOT NULL,
 
   INDEX (amenity),
+  UNIQUE (amenity),
 
-  PRIMARY KEY (listing_id, amenity),
-  FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE
+  PRIMARY KEY (amenity_id)
+);
+
+INSERT INTO Amenities(amenity) VALUES('Essentials'),('WiFi'),('Shampoo'),('Closet/Drawers'),('TV'),('Heat'),('AC'),('Desk/Workspace'),('Fireplace'),('Iron'),('Hair Dryer'),('Breakfast, Coffee, Tea'),('Smoke Detector'),('Carbon Monoxide Detector'),('First Aid Kit'),('Fire Extinguisher');
+
+
+DROP TABLE IF EXISTS ListingAmenities CASCADE;
+CREATE TABLE ListingAmenities (
+  listing_id INT UNSIGNED NOT NULL,
+  amenity_id INT UNSIGNED NOT NULL,
+
+  PRIMARY KEY (listing_id, amenity_id),
+  FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
+  FOREIGN KEY (amenity_id) REFERENCES Amenities(amenity_id) ON DELETE CASCADE
 );
 
 

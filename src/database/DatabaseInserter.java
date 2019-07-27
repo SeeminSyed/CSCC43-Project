@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import models.Listing;
+import java.util.Set;
 
 public class DatabaseInserter {
 
@@ -85,8 +85,8 @@ public class DatabaseInserter {
     return row;
   }
 
-  public static int insertListing(int user_id, String listing_type,
-      int num_bedrooms, int num_beds, int num_bathrooms, String title, String description) {
+  public static int insertListing(int user_id, String listing_type, int num_bedrooms, int num_beds,
+      int num_bathrooms, String title, String description) {
     int row = -1;
     // Get connection
     Connection connection = null;
@@ -122,7 +122,7 @@ public class DatabaseInserter {
         preparedStatement.setInt(1, user_id);
         ResultSet results = preparedStatement.getGeneratedKeys();
         results.next();
-        row = results.getInt(1); 
+        row = results.getInt(1);
       }
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
@@ -166,6 +166,40 @@ public class DatabaseInserter {
 
       row = preparedStatement.executeUpdate();
 
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return row;
+  }
+
+  public static int insertListingAmenities(int listing_id, Set<String> amenities) {
+    int row = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+    // Insert
+    String sql = "INSERT INTO ListingAmenities(listing_id, amenity_id) VALUES(?,?)";
+    try {
+      for (String amenityName : amenities) {
+        PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+        preparedStatement.setInt(1, listing_id);
+        preparedStatement.setInt(2, DatabaseSelector.getAmenityId(amenityName, connection));
+
+        row = preparedStatement.executeUpdate();
+
+      }
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {

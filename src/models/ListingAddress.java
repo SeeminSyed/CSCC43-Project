@@ -2,7 +2,7 @@ package models;
 
 public class ListingAddress {
 
-  private int listing_id;
+  private int listingId;
   private String unit;
   private String street;
   private String city;
@@ -12,9 +12,9 @@ public class ListingAddress {
   private Double x;
   private Double y;
 
-  public ListingAddress(int listing_id, String unit, String street, String city, String state,
+  public ListingAddress(int listingId, String unit, String street, String city, String state,
       String country, String zipCode, Double x, Double y) {
-    this.listing_id = listing_id;
+    this.listingId = listingId;
     this.unit = unit;
     this.street = street;
     this.city = city;
@@ -31,12 +31,12 @@ public class ListingAddress {
         + getZipCode() + "\nCoordinates: (" + getX() + ", " + getY() + ")");
   }
 
-  public int getListing_id() {
-    return listing_id;
+  public int getListingId() {
+    return listingId;
   }
 
-  public void setListing_id(int listing_id) {
-    this.listing_id = listing_id;
+  public void setListingId(int listingId) {
+    this.listingId = listingId;
   }
 
   public String getUnit() {

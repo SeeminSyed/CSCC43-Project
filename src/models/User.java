@@ -166,4 +166,19 @@ public class User {
     return this.cards.size();
   }
 
+  /**
+   * Returns suggested price increase of adding an amenity to a listing based on comparisons with other listings TODO
+   */
+  public String getAmenityPrice(String amenity) {
+    return "TODO";
+  }
+
+  /**
+   * Returns all available amenities
+   * 
+   */
+  public List<String> getAllAmenities() {
+    return DatabaseSelector.getAllAmenities();
+  }
+
 }

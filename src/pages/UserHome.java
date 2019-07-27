@@ -86,11 +86,8 @@ public class UserHome {
 
   /**
    * 
-   * Form to delete user account
+   * Form to delete user account. Returns 6 if account deleted
    * 
-   * @param userInput
-   * @param user
-   * @return
    */
   private static int deleteAccountForm(Scanner userInput, User user) {
     System.out.println("Please input your email and password to delete your account.");
@@ -110,7 +107,6 @@ public class UserHome {
       System.out.println("Incorrect credentials. Going back to the home page.");
       return 6;
     } catch (NoSuchElementException invalid) {
-      // TODO Auto-generated catch block
       System.out.println("Incorrect credentials. Going back to the home page.");
       return 6;
     }

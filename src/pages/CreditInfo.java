@@ -94,68 +94,68 @@ public class CreditInfo {
 
     // Get input
     System.out.print(" Card Number: ");
-    int card_num = 0;
+    int cardNum = 0;
     try {
-      card_num = Integer.parseInt(userInput.nextLine());
+      cardNum = Integer.parseInt(userInput.nextLine());
     } catch (NoSuchElementException | NumberFormatException invalid) {
       throw new EmptyFormException();
     }
 
     System.out.println(
         " Card Type (Input the chosen number): 1.'VISA', 2.'Mastercard', 3.'American Express', 4.'Discover' ");
-    String card_type = userInput.nextLine();
-    if (card_type.isEmpty()) {
+    String cardType = userInput.nextLine();
+    if (cardType.isEmpty()) {
       throw new EmptyFormException();
     } else {
-      switch (card_type) {
+      switch (cardType) {
         case "1":
           System.out.println(" Card Type 1.'VISA' chosen.");
-          card_type = "VISA";
+          cardType = "VISA";
           break;
         case "2":
           System.out.println(" Card Type 2.'Mastercard' chosen.");
-          card_type = "Mastercard";
+          cardType = "Mastercard";
           break;
         case "3":
           System.out.println(" Card Type 3.'American Express' chosen.");
-          card_type = "American Express";
+          cardType = "American Express";
           break;
         case "4":
           System.out.println(" Card Type 4.'Discover' chosen.");
-          card_type = "Discover";
+          cardType = "Discover";
           break;
         default:
           throw new EmptyFormException();
       }
     }
     System.out.print(" Expiry Date as 'YYYY-MM': ");
-    String exp_date = userInput.nextLine();
-    if (exp_date.isEmpty()) {
+    String expDate = userInput.nextLine();
+    if (expDate.isEmpty()) {
       throw new EmptyFormException();
     }
-    exp_date += "-01";
+    expDate += "-01";
 
     Period period =
-        Period.between(LocalDate.now(), LocalDate.of(Integer.parseInt(exp_date.substring(0, 4)),
-            Integer.parseInt(exp_date.substring(5, 7)), 1));
+        Period.between(LocalDate.now(), LocalDate.of(Integer.parseInt(expDate.substring(0, 4)),
+            Integer.parseInt(expDate.substring(5, 7)), 1));
     if (period.getYears() < 0 || (period.getYears() == 0 && period.getMonths() <= 0)) {
       throw new InvalidFormException();
     }
 
     // if card already in user list, don't add
-    if (checkUserHasCard(user, card_num)) {
+    if (checkUserHasCard(user, cardNum)) {
       System.out.println("Card already in list.");
     } else {
-      user.addCard(card_num, card_type, exp_date);
+      user.addCard(cardNum, cardType, expDate);
     }
   }
 
   /*
    * Returns true if user has card in list
    */
-  private static boolean checkUserHasCard(User user, int card_num) {
+  private static boolean checkUserHasCard(User user, int cardNum) {
     for (CreditCard card : user.getCards()) {
-      if (card.getCard_num() == card_num) {
+      if (card.getCardNum() == cardNum) {
         return true;
       }
     }

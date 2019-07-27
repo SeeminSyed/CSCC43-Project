@@ -10,19 +10,19 @@ import database.DatabaseSelector;
 
 public class Listing {
 
-  private int listing_id;
-  private int user_id;
+  private int listingId;
+  private int userId;
   // ('Apartment', 'House', 'Secondary Unit', 'Bed and Breakfast', 'Boutique Hotel')
-  private String listing_type;
-  private int num_bedrooms;
-  private int num_beds;
-  private int num_bathrooms;
+  private String listingType;
+  private int numBedrooms;
+  private int numBeds;
+  private int numBathrooms;
   private String title;
   private String description;
   private ListingAddress address;
 
   private final Set<String> amenities = new HashSet<>();
-  private final List<Comment> comments = new ArrayList<>();
+  private final List<ListingComment> comments = new ArrayList<>();
   private final List<Availability> availabilities = new ArrayList<>();
 
   /**
@@ -30,45 +30,74 @@ public class Listing {
    * 
    * @param sin
    */
-  public Listing(int listing_id, int user_id, String listing_type, int num_bedrooms, int num_beds,
-      int num_bathrooms, String title, String description) {
-    this.listing_id = listing_id;
-    this.user_id = user_id;
-    this.listing_type = listing_type;
-    this.num_bedrooms = num_bedrooms;
-    this.num_beds = num_beds;
-    this.num_bathrooms = num_bathrooms;
+  public Listing(int listingId, int userId, String listingType, int numBedrooms, int numBeds,
+      int numBathrooms, String title, String description) {
+    this.listingId = listingId;
+    this.userId = userId;
+    this.listingType = listingType;
+    this.numBedrooms = numBedrooms;
+    this.numBeds = numBeds;
+    this.numBathrooms = numBathrooms;
     this.title = title;
     this.description = description;
 
-    // this.amenities.addAll(DatabaseSelector.getListingAmenities(getListing_id()));
-    // this.comments.addAll(DatabaseSelector.getListingComments(getListing_id()));
-    // this.availabilities.addAll(DatabaseSelector.getListingAvailabilities(getListing_id()));
+     this.amenities.addAll(DatabaseSelector.getListingAmenities(getListingId()));
+     this.comments.addAll(DatabaseSelector.getListingComments(getListingId()));
+    // this.availabilities.addAll(DatabaseSelector.getListingAvailabilities(getListingId()));
   }
 
-  // TODO
-  @Override
-  public String toString() {
-    String pop = (getTitle() + "\n" + getDescription() + "\n" + getListing_type() + "\n"
-        + "Number of Bedrooms: " + getNum_bedrooms() + "\n" + "Number of Beds: " + getNum_beds()
-        + "\n" + "Number of Bathrooms: " + getNum_bathrooms() + "\n" + getAddress().toString());
+  public String toStringBasic() {
+    String pop = (getTitle() + "\n" + getDescription() + "\n" + getAddress().toString());
     return pop;
   }
-
+  
+  @Override
+  public String toString() {
+    String pop = (getTitle() + "\n" + getDescription() + "\n" + getListingType() + "\n"
+        + "Number of Bedrooms: " + getNumBedrooms() + "\n" + "Number of Beds: " + getNumBeds()
+        + "\n" + "Number of Bathrooms: " + getNumBathrooms() + "\n" + getAmenities().toString() + "\n" + getAddress().toString());
+    return pop;
+  }
   public void databaseDeleteListing() {
-    DatabaseDeleter.deleteListing(this.listing_id);
+    DatabaseDeleter.deleteListing(this.listingId);
   }
 
+  /**
+   * Returns true if added
+   */  
+  public boolean addListingAmenities(Set<String> amenities) {
+    // insert into database
+    if (databaseInsertListingAmenities(this.getListingId(), amenities) == true) {
+      this.amenities.addAll(amenities);
+      return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Returns true if added
+   */
+  public boolean databaseInsertListingAmenities(int listingId, Set<String> amenities) {
+    // insert info to database and if row number returned, then valid
+    if (DatabaseInserter.insertListingAmenities(this.getListingId(), amenities) > 0) {
+      System.out.println("amenities Added!");
+      return true;
+    } else {
+      System.out.println(">>>\nYour amenities were not added. Please try again.\n>>>");
+      return false;
+    }
+  }
+  
   /**
    * Returns true if added
    */
   public boolean addListingAddress(String unit, String street, String city, String state,
       String country, String zipCode, Double x, Double y) {
     // insert into database
-    if (databaseInsertAddress(listing_id, unit, street, city, state, country, zipCode, x,
+    if (databaseInsertAddress(this.getListingId(), unit, street, city, state, country, zipCode, x,
         y) == true) {
       this.address =
-          (new ListingAddress(listing_id, unit, street, city, state, country, zipCode, x, y));
+          (new ListingAddress(this.getListingId(), unit, street, city, state, country, zipCode, x, y));
       return true;
     }
     return false;
@@ -77,10 +106,10 @@ public class Listing {
   /**
    * Returns true if added
    */
-  public boolean databaseInsertAddress(int listing_id, String unit, String street, String city,
+  public boolean databaseInsertAddress(int listingId, String unit, String street, String city,
       String state, String country, String zipCode, Double x, Double y) {
     // insert info to database and if row number returned, then valid
-    if (DatabaseInserter.insertAddress(listing_id, unit, street, city, state, country, zipCode, x,
+    if (DatabaseInserter.insertAddress(listingId, unit, street, city, state, country, zipCode, x,
         y) > 0) {
       System.out.println("Address Added!");
       return true;
@@ -93,52 +122,52 @@ public class Listing {
 
   // ** GETTERS/SETTERS **//
 
-  public int getListing_id() {
-    return listing_id;
+  public int getListingId() {
+    return listingId;
   }
 
-  public void setListing_id(int listing_id) {
-    this.listing_id = listing_id;
+  public void setListingId(int listingId) {
+    this.listingId = listingId;
   }
 
-  public int getUser_id() {
-    return user_id;
+  public int getUserId() {
+    return userId;
   }
 
-  public void setUser_id(int user_id) {
-    this.user_id = user_id;
+  public void setUserId(int userId) {
+    this.userId = userId;
   }
 
-  public String getListing_type() {
-    return listing_type;
+  public String getListingType() {
+    return listingType;
   }
 
-  public void setListing_type(String listing_type) {
-    this.listing_type = listing_type;
+  public void setListingType(String listingType) {
+    this.listingType = listingType;
   }
 
-  public int getNum_bedrooms() {
-    return num_bedrooms;
+  public int getNumBedrooms() {
+    return numBedrooms;
   }
 
-  public void setNum_bedrooms(int num_bedrooms) {
-    this.num_bedrooms = num_bedrooms;
+  public void setNumBedrooms(int numBedrooms) {
+    this.numBedrooms = numBedrooms;
   }
 
-  public int getNum_beds() {
-    return num_beds;
+  public int getNumBeds() {
+    return numBeds;
   }
 
-  public void setNum_beds(int num_beds) {
-    this.num_beds = num_beds;
+  public void setNumBeds(int numBeds) {
+    this.numBeds = numBeds;
   }
 
-  public int getNum_bathrooms() {
-    return num_bathrooms;
+  public int getNumBathrooms() {
+    return numBathrooms;
   }
 
-  public void setNum_bathrooms(int num_bathrooms) {
-    this.num_bathrooms = num_bathrooms;
+  public void setNumBathrooms(int numBathrooms) {
+    this.numBathrooms = numBathrooms;
   }
 
   public String getTitle() {
@@ -169,17 +198,12 @@ public class Listing {
     return amenities;
   }
 
-  public List<Comment> getComments() {
+  public List<ListingComment> getComments() {
     return comments;
   }
 
   public List<Availability> getAvailabilities() {
     return availabilities;
   }
-
-//  public void addAmenities(Set<String> amenities2) {
-//    // TODO Auto-generated method stub
-//
-//  }
 
 }
