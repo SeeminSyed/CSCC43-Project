@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -491,10 +492,11 @@ public class DatabaseSelector {
       ResultSet results = preparedStatement.executeQuery();
       while (results.next()) {
         bookings.add(new Booking(results.getInt("booking_id"), results.getString("start_date"),
-            results.getString("end_date"), results.getString("status"), results.getInt("listing_id"), user_id,
-            results.getInt("card_num"), results.getDouble("cost")));
+            results.getString("end_date"), results.getString("status"),
+            results.getInt("listing_id"), user_id, results.getInt("card_num"),
+            results.getDouble("cost")));
       }
-      
+
       results.close();
       preparedStatement.close();
     } catch (SQLException sqlError) {
@@ -511,7 +513,7 @@ public class DatabaseSelector {
 
 
   public static int getUserId(int listing_id) {
-    int id  = 0;
+    int id = 0;
     // Get connection
     Connection connection = null;
     try {
@@ -544,6 +546,411 @@ public class DatabaseSelector {
       }
     }
     return id;
+  }
+
+  public static List<String> getListingCount(int option) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM listingCountByCountry";
+        break;
+      case 2:
+        sql = "SELECT * FROM listingCountByCountryCity";
+        break;
+      case 3:
+        sql = "SELECT * FROM listingCountByCountryCityZip";
+        break;
+      default:
+        break;
+    }
+    sql += " ORDER BY listing_count DESC";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add(results.getString("country") + " and listing count: "
+                + results.getInt("listing_count"));
+            break;
+          case 2:
+            print.add(results.getString("country") + ", " + results.getString("city")
+                + " and listing count: " + results.getInt("listing_count"));
+            break;
+          case 3:
+            print.add(results.getString("country") + ", " + results.getString("city") + ", "
+                + results.getString("postal_code") + " and listing count: "
+                + results.getInt("listing_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  public static List<String> getHostListingCount(int option) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM listingsCountPerHostByCountry";
+        break;
+      case 2:
+        sql = "SELECT * FROM listingsCountPerHostByCity";
+        break;
+      default:
+        break;
+    }
+    sql += " ORDER BY listing_count DESC";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add("Host: " + results.getInt("user_id") + " in " + results.getString("country")
+                + " and listing count: " + results.getInt("listing_count"));
+            break;
+          case 2:
+            print.add("Host: " + results.getInt("user_id") + " in " + results.getString("country")
+                + ", " + results.getString("city") + " and listing count: "
+                + results.getInt("listing_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  public static List<String> getCommercialHost(int option) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM commercialHostPerCountry";
+        break;
+      case 2:
+        sql = "SELECT * FROM commercialHostPerCity";
+        break;
+      default:
+        break;
+    }
+    sql += " ORDER BY listing_count DESC";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add("Host: " + results.getInt("user_id") + " in " + results.getString("country")
+                + " and listing count: " + results.getInt("listing_count"));
+            break;
+          case 2:
+            print.add("Host: " + results.getInt("user_id") + " in " + results.getString("country")
+                + ", " + results.getString("city") + " and listing count: "
+                + results.getInt("listing_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  public static List<String> getCancellations(int option) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM bookingCancellations WHERE status = 'Cancelled by Host'";
+        break;
+      case 2:
+        sql = "SELECT * FROM commercialHostPerCity WHERE status = 'Cancelled by Renter'";
+        break;
+      default:
+        break;
+    }
+    sql += " ORDER BY cancel_count DESC";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add("Host: " + results.getInt("user_id") + ", cancellations: "
+                + results.getInt("cancel_count"));
+            break;
+          case 2:
+            print.add("Renter: " + results.getString("user_id") + ", cancellations: "
+                + results.getInt("cancel_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  public static List<String> getTotalBookingsInPeriod(int option, String start, String end) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM bookingsPerCityZipCodeAndPeriod";
+        break;
+      case 2:
+        sql = "SELECT * FROM bookingsPerCityAndPeriod";
+        break;
+      default:
+        break;
+    }
+    sql += " WHERE start_date >= ? AND end_date <= ? ORDER BY cancel_count DESC";
+
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, start);
+      preparedStatement.setString(2, end);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add(results.getString("country") + ", " + results.getString("city")
+                + " and booking count: " + results.getInt("booking_count"));
+            break;
+          case 2:
+            print.add(results.getString("country") + ", " + results.getString("city") + ", "
+                + results.getString("zipCode") + " and booking count: "
+                + results.getInt("booking_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  public static List<String> getRenterBookingsInPeriod(int option, String start, String end) {
+    List<String> print = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "";
+    // select
+    switch (option) {
+      case 1:
+        sql = "SELECT * FROM userBookingsCountAndPeriod";
+        break;
+      case 2:
+        sql = "SELECT * FROM userBookingsCountPerCityAndPeriod";
+        break;
+      default:
+        break;
+    }
+    sql +=
+        " WHERE start_date >= ? AND end_date <= ? AND booking_count > 2 ORDER BY booking_count DESC";
+
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, start);
+      preparedStatement.setString(2, end);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        // select
+        switch (option) {
+          case 1:
+            print.add("Renter: " + results.getString("user_id") + " and booking count: "
+                + results.getInt("booking_count"));
+            break;
+          case 2:
+            print.add("Renter: " + results.getString("user_id") + " in "
+                + results.getString("country") + ", " + results.getString("city")
+                + " and booking count: " + results.getInt("booking_count"));
+            break;
+          default:
+            break;
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
+  }
+
+  /**
+   * returns hashmap where key is listing_id and values are lists of comments for that listing_id
+   */
+  public static HashMap<Integer, List<String>> getAllListingComments() {
+    HashMap<Integer, List<String>> print = new HashMap<>();
+    
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    String sql = "SELECT * FROM allListingComments ORDER BY listing_id DESC";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        int key = results.getInt("listing_id");
+        if (print.containsKey(key)) {
+          print.get(key).add(results.getString("comment"));
+        } else {
+          print.put(key, new ArrayList<>());
+        }
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return print;
   }
 
 

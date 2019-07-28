@@ -42,7 +42,7 @@ public class Main {
           break;
         case 3:
           System.out.println("Viewing Reports... ");
-          // TODO: viewReports(userInput);
+           Reports.main(userInput);
           break;
         case 0:
           System.out.println("Bye");

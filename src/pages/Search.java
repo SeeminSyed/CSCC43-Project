@@ -5,8 +5,8 @@ import models.User;
 
 public class Search {
 
-  public static void main(Scanner userInput, User user) {
-    // TODO Auto-generated method stub
+  public static void main(Scanner userInput, User user) {// when user books, check availability, modify availability based on timing
+    // TODO search
     
   }
 

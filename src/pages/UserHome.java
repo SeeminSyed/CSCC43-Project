@@ -54,7 +54,7 @@ public class UserHome {
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
-        userChoice = 0;
+        userChoice = -1;
       }
 
       // sign up, sign in or exit

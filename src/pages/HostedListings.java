@@ -40,7 +40,7 @@ public class HostedListings {
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
-        userChoice = 0;
+        userChoice = -1;
       }
 
       // add, view, back
@@ -286,7 +286,7 @@ public class HostedListings {
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
-        userChoice = 0;
+        userChoice = -1;
       }
 
       // remove listing, view availability, view comments, go back
@@ -342,7 +342,7 @@ public class HostedListings {
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
-        userChoice = 0;
+        userChoice = -1;
       }
 
       // add, delete/(edit->price/startDate/endDate), go back

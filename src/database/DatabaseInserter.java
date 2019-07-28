@@ -298,45 +298,6 @@ public class DatabaseInserter {
     return exit;
   }
 
-  public static int insertUserComment(int booking_id, String comment, int commenter_id,
-      int commentee_id, int rating) {
-    int row = -1;
-    // Get connection
-    Connection connection = null;
-    try {
-      connection = Driver.connectOrCreateDataBase();
-    } catch (ClassNotFoundException e) {
-      System.out.println("Something went wrong with your connection! See details below: ");
-      e.printStackTrace();
-    }
-    // Insert
-    String sql =
-        "INSERT INTO UserComments(booking_id, comment, commenter_id, commentee_id, rating) VALUES(?,?,?,?,?)";
-    try {
-      PreparedStatement preparedStatement = connection.prepareStatement(sql);
-
-      preparedStatement.setInt(1, booking_id);
-      preparedStatement.setString(2, comment);
-      preparedStatement.setInt(3, commenter_id);
-      preparedStatement.setInt(4, commentee_id);
-      preparedStatement.setInt(5, rating);
-
-      row = preparedStatement.executeUpdate();
-
-      preparedStatement.close();
-    } catch (SQLException sqlError) {
-      sqlError.printStackTrace();
-    } finally {
-      try {
-        connection.close();
-      } catch (SQLException sqlError) {
-        sqlError.printStackTrace();
-      }
-    }
-    return row;
-
-  }
-
 
   public static boolean updateAvalilabilityPrice(int availabilityId, Double newPrice) {
     // Get connection
@@ -408,6 +369,45 @@ public class DatabaseInserter {
       }
     }
     return exit;
+  }
+
+  public static int insertUserComment(int booking_id, String comment, int commenter_id,
+      int commentee_id, int rating) {
+    int row = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+    // Insert
+    String sql =
+        "INSERT INTO UserComments(booking_id, comment, commenter_id, commentee_id, rating) VALUES(?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, booking_id);
+      preparedStatement.setString(2, comment);
+      preparedStatement.setInt(3, commenter_id);
+      preparedStatement.setInt(4, commentee_id);
+      preparedStatement.setInt(5, rating);
+
+      row = preparedStatement.executeUpdate();
+
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return row;
+
   }
 
   public static int insertListingComment(int booking_id, String comment, int user_id,
