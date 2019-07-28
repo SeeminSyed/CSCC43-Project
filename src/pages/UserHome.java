@@ -61,7 +61,7 @@ public class UserHome {
       switch (userChoice) {
         case 1:
           System.out.println("Showing Property Listings Search... ");
-          // signUp(userInput); // TODO Property Listings Search
+          Search.main(userInput, user); // TODO Property Listings Search
           break;
         case 2:
           System.out.println("Showing Your Bookings... ");

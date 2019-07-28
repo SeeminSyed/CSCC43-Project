@@ -21,6 +21,7 @@ CREATE TABLE Users (
   PRIMARY KEY (sin)
 );
 
+
 -- DROP TABLE IF EXISTS Listings CASCADE;
 CREATE TABLE Listings (
   listing_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -91,7 +92,7 @@ CREATE TABLE Amenities (
   PRIMARY KEY (amenity_id)
 );
 
-INSERT INTO Amenities(amenity) VALUES('Essentials'),('WiFi'),('Shampoo'),('Closet/Drawers'),('TV'),('Heat'),('AC'),('Desk/Workspace'),('Fireplace'),('Iron'),('Hair Dryer'),('Breakfast, Coffee, Tea'),('Smoke Detector'),('Carbon Monoxide Detector'),('First Aid Kit'),('Fire Extinguisher');
+INSERT INTO Amenities(amenity) VALUES('Essentials'),('WiFi'),('Shampoo'),('Closet/Drawers'),('TV'),('Heat'),('AC'),('Desk/Workspace'),('Fireplace'),('Iron'),('Hair Dryer'),('Breakfast, Coffee, Tea'),('Smoke Detector'),('Carbon Monoxide Detector'),('First Aid Kit'),('Fire Extinguisher'),('Locks on Doors');
 
 
 -- DROP TABLE IF EXISTS ListingAmenities CASCADE;
