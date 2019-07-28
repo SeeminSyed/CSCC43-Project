@@ -1,7 +1,10 @@
 package pages;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.NoSuchElementException;
+import exceptions.*;
 import java.util.Scanner;
 import models.*;
 
@@ -58,7 +61,7 @@ public class UserHome {
       switch (userChoice) {
         case 1:
           System.out.println("Showing Property Listings Search... ");
-          // signUp(userInput); // TODO
+          // signUp(userInput); // TODO Property Listings Search
           break;
         case 2:
           System.out.println("Showing Your Bookings... ");
@@ -104,74 +107,140 @@ public class UserHome {
 
 
   private static void viewUserBookings(Scanner userInput, User user) {
-      // get user's bookings
-      List<Booking> userBookings;
-      int userChoice;
-      int bookingListNum;
-      int i = 0;
-      // loop till exit
-      do {
-        i = 0;
-        userBookings = user.getBookings();
-        System.out.println(">>>");
-        for (Booking booking : userBookings) {
-          i++;
-          System.out.println(i + ". " + booking.toString());
-          System.out.println("------------------------------------------------");
-        }
-        System.out.println(">>>");
+    // get user's bookings
+    List<Booking> userBookings;
+    int userChoice;
+    int bookingListNum;
+    int i = 0;
+    // loop till exit
+    do {
+      i = 0;
+      userBookings = user.getBookings();
+      System.out.println(">>>");
+      for (Booking booking : userBookings) {
+        i++;
+        System.out.println(i + ". " + booking.toString());
+        System.out.println("------------------------------------------------");
+      }
+      System.out.println(">>>");
 
-        System.out.print(
-            // cancel booking
-            " 1. Cancel a Booking\n"
-                // comment listing owner
-                + " 2. Comment on the Listing Owner\n"
-                // comment listing
-                + " 3. Comment on the Listing\n"
-                // Back
-                + " 0. Go Back \n");
-        System.out.print("Enter the option number: ");
+      System.out.print(
+          // cancel booking
+          " 1. Cancel a Booking\n"
+              // comment listing owner
+              + " 2. Make comment on the Listing Owner\n"
+              // comment listing
+              + " 3. Make comment on the Listing\n"
+              // Back
+              + " 0. Go Back \n");
+      System.out.print("Enter the option number: ");
 
-        try {
-          userChoice = Integer.parseInt(userInput.nextLine());
-        } catch (NoSuchElementException | NumberFormatException invalid) {
-          System.out.println("Invalid Input.");
-          userChoice = -1;
-          continue;
-        }
-        // cancel, comment user, comment listing, back
-        switch (userChoice) {
-          case 1:
-            System.out.print("Choose by option number which booking to cancel: ");
-            try {
-              bookingListNum = Integer.parseInt(userInput.nextLine());
-            } catch (NoSuchElementException | NumberFormatException invalid) {
-              System.out.println("Invalid Input.");
-              bookingListNum = 0;
-              userChoice = 0;
-            }
-            if (userChoice > 0 && userChoice <= user.getNumBookings()) {
-              user.deleteUserBooking(user.getBookings().get(bookingListNum - 1).getBookingId());
-              System.out.println("Booking Deleted.");
-            } else {
-              System.out.println(">>> Command not recognized. Please try again. >>>");
-            }
-            break;
-          case 2: // user comment TODO
-            
-            break;
-          case 3: // listing comment TODO
-            
-            break;
-          case 0:
-            System.out.println("Going Back... ");
-            break;
-          default:
+      try {
+        userChoice = Integer.parseInt(userInput.nextLine());
+      } catch (NoSuchElementException | NumberFormatException invalid) {
+        System.out.println("Invalid Input.");
+        userChoice = -1;
+        continue;
+      }
+      // cancel, comment user, comment listing, back
+      switch (userChoice) {
+        case 1:
+          System.out.print("Choose by option number which booking to cancel: ");
+          try {
+            bookingListNum = Integer.parseInt(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            System.out.println("Invalid Input.");
+            bookingListNum = 0;
+            userChoice = 0;
+          }
+          if (userChoice > 0 && userChoice <= user.getNumBookings()) {
+            user.cancelUserBooking(user.getBookings().get(bookingListNum - 1).getBookingId());
+            System.out.println("Booking Deleted.");
+          } else {
             System.out.println(">>> Command not recognized. Please try again. >>>");
-            break;
-        }
-      } while (userChoice != 0);
-    }
+          }
+          break;
+        case 2: // make user comment
+          System.out.print(
+              "Choose by option number which listing's host you would like to comment on. Note that you have to have rented the place in the last month: ");
+          try {
+            bookingListNum = Integer.parseInt(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            System.out.println("Invalid Input.");
+            bookingListNum = 0;
+            userChoice = -1;
+          }
+          // check if valid number
+          if (userChoice > 0 && userChoice <= user.getNumBookings()) {
+            // check if end date before current date
+            Booking tempBooking = user.getBookings().get(bookingListNum - 1);
+            String end = tempBooking.getEndDate();
+            LocalDate endDate = LocalDate.of(Integer.parseInt(end.substring(0, 4)),
+                Integer.parseInt(end.substring(5, 7)), Integer.parseInt(end.substring(8)));
+            long p = ChronoUnit.DAYS.between(endDate, LocalDate.now());
+
+            if (p >= 0 && p <= 31) {
+              // if so, make comment
+              // get id of user to make comment on
+              int hostId = tempBooking.getUserId();
+              try {
+                user.addCommentForm(userInput, user, tempBooking.getBookingId(), hostId);
+              } catch (InvalidFormException e) {
+                System.out.println("Invalid Input. Try Again.");
+              }
+            } else {
+              System.out.println(
+                  "Cannot comment on renter as the booking is in the future or too far in the past.");
+            }
+          } else {
+            System.out.println(">>> Command not recognized. Please try again. >>>");
+          }
+          break;
+        case 3: // make listing comment
+          System.out.print(
+              "Choose by option number which listing you would like to comment on. Note that you have to have rented the place in the last month: ");
+          try {
+            bookingListNum = Integer.parseInt(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            System.out.println("Invalid Input.");
+            bookingListNum = 0;
+            userChoice = -1;
+          }
+          // check if valid number
+          if (userChoice > 0 && userChoice <= user.getNumBookings()) {
+            // check if end date before current date
+            Booking tempBooking = user.getBookings().get(bookingListNum - 1);
+            String end = tempBooking.getEndDate();
+            LocalDate endDate = LocalDate.of(Integer.parseInt(end.substring(0, 4)),
+                Integer.parseInt(end.substring(5, 7)), Integer.parseInt(end.substring(8)));
+            long p = ChronoUnit.DAYS.between(endDate, LocalDate.now());
+
+            if (p >= 0 && p <= 31) {
+              // if so, make comment
+              // get id of listing to make comment on
+              int listingId = tempBooking.getListingId();
+              try {
+                user.addListingCommentForm(userInput, user, tempBooking.getBookingId(), listingId);
+              } catch (InvalidFormException e) {
+                System.out.println("Invalid Input. Try Again.");
+              }
+            } else {
+              System.out.println(
+                  "Cannot comment on renter as the booking is in the future or too far in the past.");
+            }
+          } else {
+            System.out.println(">>> Command not recognized. Please try again. >>>");
+          }
+          break;
+        case 0:
+          System.out.println("Going Back... ");
+          break;
+        default:
+          System.out.println(">>> Command not recognized. Please try again. >>>");
+          break;
+      }
+    } while (userChoice != 0);
+  }
 
 
 

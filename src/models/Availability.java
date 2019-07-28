@@ -1,6 +1,7 @@
 package models;
 
 import database.DatabaseDeleter;
+import database.DatabaseInserter;
 
 public class Availability {
 
@@ -30,6 +31,23 @@ public class Availability {
 
   public void databaseDeleteAvailability() {
     DatabaseDeleter.deleteAvailability(this.availabilityId);
+  }
+
+  public void updatePrice(Double newPrice) {
+    // database
+    if (DatabaseInserter.updateAvalilabilityPrice(this.availabilityId, newPrice)) {
+      this.setPrice(newPrice);
+    }
+  }
+
+
+  public void updateDates(String newStart, String newEnd) {
+    // database
+    if (DatabaseInserter.updateAvalilabilityDates(this.availabilityId, newStart, newEnd)) {
+      this.setStartDate(newStart);
+      this.setEndDate(newEnd);
+    }
+
   }
 
   public int getAvailabilityId() {
@@ -87,6 +105,5 @@ public class Availability {
   public void setListingId(int listingId) {
     this.listingId = listingId;
   }
-
 
 }

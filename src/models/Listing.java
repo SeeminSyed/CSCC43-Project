@@ -1,5 +1,6 @@
 package models;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -74,11 +75,9 @@ public class Listing {
 
   }
 
-  public void deleteBooking(int bookingId) {
-    // delete from database
-    this.bookings.get(bookingId).databaseDeleteBooking();
-    // delete from object
-    this.bookings.remove(bookingId);
+  public void cancelBooking(int bookingId) {
+    // database
+    this.bookings.get(bookingId).databaseCancelBooking("Cancelled by Host", LocalDate.now().toString());
   }
 
   /**

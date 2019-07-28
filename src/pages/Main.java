@@ -1,6 +1,7 @@
 package pages;
 
 import java.time.DateTimeException;
+import exceptions.*;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.NoSuchElementException;
@@ -19,7 +20,7 @@ public class Main {
     // loop till exit
     do {
       System.out.println("Welcome to MyBnB!");
-      System.out.print(" 1. Sign In \n 2. Sign Up \n 0. Exit \n");
+      System.out.print(" 1. Sign In \n 2. Sign Up \n 3. Reports \n 0. Exit \n");
       System.out.print("Enter the option number: ");
       // get input
       userInput = new Scanner(System.in);
@@ -38,6 +39,10 @@ public class Main {
         case 2:
           System.out.println("Signing Up... ");
           signUp(userInput);
+          break;
+        case 3:
+          System.out.println("Viewing Reports... ");
+          // TODO: viewReports(userInput);
           break;
         case 0:
           System.out.println("Bye");
@@ -97,7 +102,7 @@ public class Main {
       LocalDate date = LocalDate.of(Integer.parseInt(dob.substring(0, 4)),
           Integer.parseInt(dob.substring(5, 7)), Integer.parseInt(dob.substring(8)));
       long p = ChronoUnit.DAYS.between(LocalDate.now(), date);
-      if (p < (18*365+(18%4))) {
+      if (p < (18 * 365 + (18 % 4))) {
         throw new InvalidFormException();
       }
 

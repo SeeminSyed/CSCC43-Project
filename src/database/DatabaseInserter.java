@@ -38,6 +38,7 @@ public class DatabaseInserter {
 
       row = preparedStatement.executeUpdate();
 
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -73,6 +74,7 @@ public class DatabaseInserter {
 
       row = preparedStatement.executeUpdate();
 
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -120,6 +122,8 @@ public class DatabaseInserter {
         results.next();
         listing_id = results.getInt(1);
       }
+
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -162,6 +166,7 @@ public class DatabaseInserter {
 
       row = preparedStatement.executeUpdate();
 
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -195,6 +200,7 @@ public class DatabaseInserter {
 
         row = preparedStatement.executeUpdate();
 
+        preparedStatement.close();
       }
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
@@ -225,7 +231,8 @@ public class DatabaseInserter {
     String sql =
         "INSERT INTO Availability(listing_use, start_date, end_date, price, available, listing_id) VALUES(?,?,?,?,?,?)";
     try {
-      PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+      PreparedStatement preparedStatement =
+          connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
 
       preparedStatement.setString(1, listing_use);
@@ -242,6 +249,7 @@ public class DatabaseInserter {
         results.next();
         availability_id = results.getInt(1);
       }
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -252,6 +260,192 @@ public class DatabaseInserter {
       }
     }
     return availability_id;
+  }
+
+  public static boolean cancelBooking(int booking_id, String status, String end_date) {
+    // Get connection
+    boolean exit = false;
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // delete
+    String sql = "UPDATE Bookings SET status = ? AND end_date = ? WHERE bookings_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, status);
+      preparedStatement.setString(2, end_date);
+      preparedStatement.setInt(3, booking_id);
+
+      if (preparedStatement.executeUpdate() > 0) {
+        exit = true;
+      }
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return exit;
+  }
+
+  public static int insertUserComment(int booking_id, String comment, int commenter_id,
+      int commentee_id, int rating) {
+    int row = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+    // Insert
+    String sql =
+        "INSERT INTO UserComments(booking_id, comment, commenter_id, commentee_id, rating) VALUES(?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, booking_id);
+      preparedStatement.setString(2, comment);
+      preparedStatement.setInt(3, commenter_id);
+      preparedStatement.setInt(4, commentee_id);
+      preparedStatement.setInt(5, rating);
+
+      row = preparedStatement.executeUpdate();
+
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return row;
+
+  }
+
+
+  public static boolean updateAvalilabilityPrice(int availabilityId, Double newPrice) {
+    // Get connection
+    boolean exit = false;
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // update
+    String sql = "UPDATE Availability SET price = ? WHERE availability_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setDouble(1, newPrice);
+      preparedStatement.setInt(2, availabilityId);
+
+      if (preparedStatement.executeUpdate() > 0) {
+        exit = true;
+      }
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return exit;
+  }
+
+  public static boolean updateAvalilabilityDates(int availabilityId, String newStart,
+      String newEnd) {
+    // Get connection
+    boolean exit = false;
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // update
+    String sql = "UPDATE Availability SET new_start = ? AND new_end = ? WHERE availability_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setString(1, newStart);
+      preparedStatement.setString(2, newEnd);
+      preparedStatement.setInt(3, availabilityId);
+
+      if (preparedStatement.executeUpdate() > 0) {
+        exit = true;
+      }
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return exit;
+  }
+
+  public static int insertListingComment(int booking_id, String comment, int user_id,
+      int listing_id, int rating) {
+    int row = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+    // Insert
+    String sql =
+        "INSERT INTO ListingComments(booking_id, comment, user_id, listing_id, rating) VALUES(?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, booking_id);
+      preparedStatement.setString(2, comment);
+      preparedStatement.setInt(3, user_id);
+      preparedStatement.setInt(4, listing_id);
+      preparedStatement.setInt(5, rating);
+
+      row = preparedStatement.executeUpdate();
+
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return row;
   }
 
 }

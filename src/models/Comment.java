@@ -2,13 +2,12 @@ package models;
 
 import database.DatabaseSelector;
 
-public class Comment { // TODO
+public class Comment {
   
   private int bookingId;
   private String commentBody;
   private int commenterId;
   private int commenteeId;
-//  private int listingId;
   private String date;
   private int rating;
 
@@ -20,7 +19,6 @@ public class Comment { // TODO
     this.commentBody = commentBody;
     this.commenterId = commenterId;
     this.commenteeId = commenteeId;
-//    this.listingId = listingId;
     this.date = date;
     this.rating = rating;
   }
@@ -73,17 +71,6 @@ public class Comment { // TODO
   public void setCommenteeId(int commenteeId) {
     this.commenteeId = commenteeId;
   }
-
-
-//  public int getListingId() {
-//    return listingId;
-//  }
-//
-//
-//  public void setListingId(int listingId) {
-//    this.listingId = listingId;
-//  }
-
 
   public String getDate() {
     return date;

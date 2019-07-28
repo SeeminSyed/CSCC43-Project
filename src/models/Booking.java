@@ -1,6 +1,7 @@
 package models;
 
-import database.DatabaseDeleter;
+import database.DatabaseInserter;
+import database.DatabaseSelector;
 
 public class Booking {
 
@@ -9,29 +10,39 @@ public class Booking {
   private String endDate;
   private String status;
   private int listingId;
-  private int userId;
-  private int cardNum; // only fill if card belongs to user of userId
+  private int renterId;
+  private int cardNum; // only fill if card belongs to renter of renterId
+  private Double cost;
 
   public Booking(int bookingId, String startDate, String endDate, String status, int listingId,
-      int userId, int cardNum) {
+      int renterId, int cardNum, Double cost) {
     this.bookingId = bookingId;
     this.startDate = startDate;
     this.endDate = endDate;
     this.status = status;
     this.listingId = listingId;
-    this.userId = userId;
+    this.renterId = renterId;
     this.cardNum = cardNum;
+    this.cost = cost;
   }
 
   @Override
   public String toString() {
-    return ("From: " + startDate + " to " + endDate + "\nStatus: " + status + "\n Paid with:"
-        + cardNum);
+    return ("From: " + startDate + " to " + endDate + "\nStatus: " + status + "\n Paid $" + cost
+        + " with:" + cardNum);
   }
 
-  public void databaseDeleteBooking() {
-    DatabaseDeleter.deleteBooking(this.bookingId);
+  public void databaseCancelBooking(String status, String end_date) {
+    if (DatabaseInserter.cancelBooking(this.bookingId, status, end_date)) {
+      this.setStatus(status);
+      this.setEndDate(end_date);
+    }
   }
+
+  public int getUserId() {
+    return DatabaseSelector.getUserId(listingId);
+  }
+
 
   public int getBookingId() {
     return bookingId;
@@ -73,12 +84,12 @@ public class Booking {
     this.listingId = listingId;
   }
 
-  public int getUserId() {
-    return userId;
+  public int getRenterId() {
+    return renterId;
   }
 
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setRenterId(int renterId) {
+    this.renterId = renterId;
   }
 
   public int getcardNum() {
@@ -87,6 +98,14 @@ public class Booking {
 
   public void setcardNum(int cardNum) {
     this.cardNum = cardNum;
+  }
+
+  public Double getCost() {
+    return cost;
+  }
+
+  public void setCost(Double cost) {
+    this.cost = cost;
   }
 
 }

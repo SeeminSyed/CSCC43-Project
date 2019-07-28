@@ -1,4 +1,4 @@
--- C:\Users\seemi\Desktop\School\Uni\Semester 6 S19\CSCC43\Project\CSCC43-Project\database.sql
+-- C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/database.sql
 DROP DATABASE IF EXISTS mybnb;
 CREATE DATABASE mybnb;
 USE mybnb;
@@ -80,7 +80,7 @@ CREATE TABLE Address (
 );
 
 
-DROP TABLE IF EXISTS Amenities CASCADE;
+-- DROP TABLE IF EXISTS Amenities CASCADE;
 CREATE TABLE Amenities (
   amenity_id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   amenity VARCHAR(50) NOT NULL,
@@ -94,7 +94,7 @@ CREATE TABLE Amenities (
 INSERT INTO Amenities(amenity) VALUES('Essentials'),('WiFi'),('Shampoo'),('Closet/Drawers'),('TV'),('Heat'),('AC'),('Desk/Workspace'),('Fireplace'),('Iron'),('Hair Dryer'),('Breakfast, Coffee, Tea'),('Smoke Detector'),('Carbon Monoxide Detector'),('First Aid Kit'),('Fire Extinguisher');
 
 
-DROP TABLE IF EXISTS ListingAmenities CASCADE;
+-- DROP TABLE IF EXISTS ListingAmenities CASCADE;
 CREATE TABLE ListingAmenities (
   listing_id INT UNSIGNED NOT NULL,
   amenity_id INT UNSIGNED NOT NULL,
@@ -148,11 +148,12 @@ CREATE TABLE Bookings (
 
   start_date DATE NOT NULL,
   end_date DATE NOT NULL,
-  status ENUM('Booked', 'Canceled by Host', 'Canceled by Renter') NOT NULL DEFAULT 'Booked',
+  status ENUM('Booked', 'Cancelled by Host', 'Cancelled by Renter') NOT NULL DEFAULT 'Booked',
 
   listing_id INT UNSIGNED NOT NULL,
   user_id INT UNSIGNED NOT NULL,
   card_num INT(20) UNSIGNED NOT NULL,
+  cost DECIMAL(7, 2) NOT NULL,
 
   INDEX (user_id),
   INDEX (listing_id),
@@ -196,18 +197,15 @@ CREATE TABLE UserComments (
 
   commenter_id INT UNSIGNED NOT NULL,
   commentee_id INT UNSIGNED NOT NULL,
-  -- listing_id INT UNSIGNED NOT NULL,
   booking_id INT UNSIGNED NOT NULL,
   rating INT UNSIGNED NOT NULL,
 
   INDEX (commenter_id),
   INDEX (commentee_id),
-  INDEX (listing_id),
   INDEX (rating),
 
   PRIMARY KEY (booking_id),
 
-  -- FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
   FOREIGN KEY (commenter_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (commentee_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (booking_id) REFERENCES Bookings(booking_id) ON DELETE CASCADE,

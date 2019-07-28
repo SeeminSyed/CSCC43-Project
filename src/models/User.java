@@ -1,8 +1,12 @@
 package models;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 import database.*;
+import exceptions.InvalidFormException;
 
 public class User {
 
@@ -25,9 +29,9 @@ public class User {
     this.name = DatabaseSelector.getUserName(getSin());
 
     this.cards.addAll(DatabaseSelector.getUserCards(getSin()));
-    // this.bookings.addAll(DatabaseSelector.getUserBookings(getSin()));
+    this.bookings.addAll(DatabaseSelector.getUserBookings(getSin()));
     this.listings.addAll(DatabaseSelector.getUserListings(getSin()));
-    // this.comments.addAll(DatabaseSelector.getUserComments(getSin()));
+    this.comments.addAll(DatabaseSelector.getUserComments(getSin()));
   }
 
   public void databaseDeleteUser() {
@@ -39,6 +43,64 @@ public class User {
     this.cards.get(cardListNum).databaseDeleteCard();
     // delete from user object
     this.cards.remove(cardListNum);
+  }
+
+  public void addCommentForm(Scanner userInput, User user, int bookingId, int renterId)
+      throws InvalidFormException {
+    String commentBody;
+    int rating;
+
+    // get coordinates
+    System.out.print("Rating 1-5:");
+    try {
+      rating = Integer.parseInt(userInput.nextLine());
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    }
+
+    System.out.print(" Comment: ");
+    try {
+      commentBody = userInput.nextLine();
+    } catch (NoSuchElementException invalid) {
+      throw new InvalidFormException();
+    }
+    // insert comment into database
+    user.databaseInsertUserComment(bookingId, commentBody, user.getSin(), renterId, rating);
+  }
+
+  public void addListingCommentForm(Scanner userInput, User user, int bookingId, int listingId)
+      throws InvalidFormException {
+    String commentBody;
+    int rating;
+
+    // get coordinates
+    System.out.print("Rating 1-5:");
+    try {
+      rating = Integer.parseInt(userInput.nextLine());
+    } catch (NoSuchElementException | NumberFormatException invalid) {
+      throw new InvalidFormException();
+    }
+
+    System.out.print(" Comment: ");
+    try {
+      commentBody = userInput.nextLine();
+    } catch (NoSuchElementException invalid) {
+      throw new InvalidFormException();
+    }
+    // insert comment into database
+    user.databaseInsertListingComment(bookingId, commentBody, user.getSin(), listingId, rating);
+  }
+
+
+  private void databaseInsertListingComment(int bookingId, String commentBody, int userId,
+      int listingId, int rating) {
+    // insert info to database and if row number returned, then valid
+    if ((DatabaseInserter.insertListingComment(bookingId, commentBody, userId, listingId,
+        rating)) > 0) {
+      System.out.println("Comment Added!");
+    } else {
+      System.out.println(">>> \nYour comment was not added. Please try again.\n>>>");
+    }
   }
 
   /**
@@ -110,11 +172,22 @@ public class User {
     return listing_id;
   }
 
-  public void deleteUserBooking(int bookingId) {
-    // delete from database
-    this.bookings.get(bookingId).databaseDeleteBooking();
-    // delete from user object
-    this.bookings.remove(bookingId);
+  public void databaseInsertUserComment(int bookingId, String commentBody, int commenterId,
+      int commenteeId, int rating) {
+    // insert info to database and if row number returned, then valid
+    if ((DatabaseInserter.insertUserComment(bookingId, commentBody, commenterId, commenteeId,
+        rating)) > 0) {
+      System.out.println("Comment Added!");
+    } else {
+      System.out.println(">>> \nYour comment was not added. Please try again.\n>>>");
+    }
+
+  }
+
+  public void cancelUserBooking(int bookingId) {
+    // database
+    this.bookings.get(bookingId).databaseCancelBooking("Cancelled by Renter",
+        LocalDate.now().toString());
   }
 
   // ** GETTERS/SETTERS **//
@@ -184,8 +257,8 @@ public class User {
   }
 
   /**
-   * Returns suggested price increase of adding an amenity to a listing based on comparisons with
-   * other listings TODO
+   * TODO Returns suggested price increase of adding an amenity to a listing based on comparisons with
+   * other listings
    */
   public String getAmenityPrice(String amenity) {
     return "TODO";

@@ -13,6 +13,7 @@ import models.Booking;
 import models.Listing;
 import models.ListingComment;
 import models.User;
+import exceptions.*;
 
 public class HostedListings {
 
@@ -240,7 +241,7 @@ public class HostedListings {
     int i = 0;
     for (String amenity : amenities) {
       i++;
-      System.out.println(" " + i + ". " + amenity + " -- $" + user.getAmenityPrice(amenity)); // TODO
+      System.out.println(" " + i + ". " + amenity + " -- $" + user.getAmenityPrice(amenity));
     }
 
     System.out.println(
@@ -305,7 +306,7 @@ public class HostedListings {
           viewListingComments(userInput, user, listing);
           break;
         case 4:
-          // view bookings -> cancel/(comment on user) TODO
+          // view bookings -> cancel/(comment on user)
           viewListingBookings(userInput, user, listing);
           break;
         case 0:
@@ -459,7 +460,8 @@ public class HostedListings {
     }
 
     if (availabilityNum > 0 && availabilityNum <= listing.getNumAvailability()) {
-      System.out.print(" 1. Delete \n 2. Edit \n 0. Go Back ");
+      System.out
+          .print(" 1. Delete Availability \n 2. Edit price or avaliable dates \n 0. Go Back ");
       try {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
@@ -469,7 +471,12 @@ public class HostedListings {
         listing.deleteAvailabilityNum(availabilityNum - 1);
         System.out.println("Availability Deleted.");
         out = 0;
-      } else if (userChoice == 2) { // edit->price/start/end TODO
+      } else if (userChoice == 2) { // edit->price/start/end
+        try {
+          viewEditAvailability(userInput, listing,
+              listing.getAvailabilities().get(availabilityNum - 1));
+        } catch (InvalidFormException e) {
+        }
       } else if (userChoice == 0) { // go back
         System.out.println("Going back...");
       } else {
@@ -481,15 +488,103 @@ public class HostedListings {
     return out;
   }
 
+  private static void viewEditAvailability(Scanner userInput, Listing listing,
+      Availability availability) throws InvalidFormException {
+    int userChoice;
+    Double newPrice = 0.0;
+    LocalDate startDate = null;
+    String newStart = "";
+    LocalDate endDate;
+    String newEnd = "";
+    long p;
+    do {
+      System.out.print(" 1. Edit price \n 2. Edit Dates \n 0. Go Back ");
+      try {
+        userChoice = Integer.parseInt(userInput.nextLine());
+      } catch (NoSuchElementException | NumberFormatException invalid) {
+        userChoice = -1;
+      }
+      switch (userChoice) {
+        case 1:
+          // get new price
+          System.out.print(" Enter new price or nothing to cancel.");
+          try {
+            newPrice = Double.parseDouble(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+
+          }
+          // insert price if valid
+          if (newPrice > 0.0) {
+            availability.updatePrice(newPrice);
+          }
+
+          break;
+        case 2:
+          // get new start date
+          System.out
+              .print(" Enter new start date in the format 'YYYY-MM-DD' or nothing to cancel.");
+          try {
+            newStart = userInput.nextLine();
+            startDate = LocalDate.of(Integer.parseInt(newStart.substring(0, 4)),
+                Integer.parseInt(newStart.substring(5, 7)),
+                Integer.parseInt(newStart.substring(8)));
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            continue;
+          } catch (IndexOutOfBoundsException invalid) {
+            System.out.print("Invalid format: 'YYYY-MM-DD'. Try again.");
+            continue;
+          }
+
+          p = ChronoUnit.DAYS.between(LocalDate.now(), startDate);
+          // check
+          if (p <= 0) {
+            System.out.print("Start date has to be after current date. Try again.");
+            continue;
+          }
+
+          // get new end date
+          System.out.print(" Enter new end date in the format 'YYYY-MM-DD' or nothing to cancel.");
+          try {
+            newEnd = userInput.nextLine();
+            endDate = LocalDate.of(Integer.parseInt(newEnd.substring(0, 4)),
+                Integer.parseInt(newEnd.substring(5, 7)), Integer.parseInt(newEnd.substring(8)));
+            p = ChronoUnit.DAYS.between(startDate, endDate);
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            continue;
+          } catch (IndexOutOfBoundsException invalid) {
+            System.out.print("Invalid format: 'YYYY-MM-DD'. Try again.");
+            continue;
+          }
+          // check
+          if (p > 0) {
+            availability.updateDates(newStart, newEnd);
+          } else {
+            System.out.print("End date has to be after start date. Try again.");
+
+          }
+          break;
+        case 0:
+          System.out.println("Going Back... ");
+          break;
+        default:
+          System.out.println(">>> Command not recognized. Please try again. >>>");
+          break;
+      }
+    } while (userChoice != 0);
+
+  }
+
   private static void viewListingBookings(Scanner userInput, User user, Listing listing) {
     // get user's bookings
     List<Booking> listingBookings;
     int userChoice;
     int bookingListNum;
-    int i = 0;
+    int i;
     // loop till exit
     do {
       i = 0;
+      bookingListNum = -1;
+      userChoice = -1;
       listingBookings = listing.getBookings();
       System.out.println(">>>");
       for (Booking booking : listingBookings) {
@@ -512,7 +607,6 @@ public class HostedListings {
         userChoice = Integer.parseInt(userInput.nextLine());
       } catch (NoSuchElementException | NumberFormatException invalid) {
         System.out.println("Invalid Input.");
-        userChoice = -1;
         continue;
       }
       // cancel, comment, back
@@ -524,18 +618,51 @@ public class HostedListings {
           } catch (NoSuchElementException | NumberFormatException invalid) {
             System.out.println("Invalid Input.");
             bookingListNum = 0;
-            userChoice = 0;
+            userChoice = -1;
           }
 
           if (userChoice > 0 && userChoice <= listing.getNumBookings()) {
-            listing.deleteBooking(listing.getBookings().get(bookingListNum - 1).getBookingId());
-            System.out.println("Booking Deleted.");
+            listing.cancelBooking(listing.getBookings().get(bookingListNum - 1).getBookingId());
+            System.out.println("Booking Canceled.");
           } else {
             System.out.println(">>> Command not recognized. Please try again. >>>");
           }
           break;
-        case 2: // user comment TODO
-          
+        case 2: // user comment
+          System.out.print(
+              "Choose by option number which booking's renter you would like to comment on. Note that the renter has to have rented the place in the last month: ");
+          try {
+            bookingListNum = Integer.parseInt(userInput.nextLine());
+          } catch (NoSuchElementException | NumberFormatException invalid) {
+            System.out.println("Invalid Input.");
+            bookingListNum = 0;
+            userChoice = -1;
+          }
+          // check if valid number
+          if (userChoice > 0 && userChoice <= listing.getNumBookings()) {
+            // check if end date before current date
+            Booking tempBooking = listing.getBookings().get(bookingListNum - 1);
+            String end = tempBooking.getEndDate();
+            LocalDate endDate = LocalDate.of(Integer.parseInt(end.substring(0, 4)),
+                Integer.parseInt(end.substring(5, 7)), Integer.parseInt(end.substring(8)));
+            long p = ChronoUnit.DAYS.between(endDate, LocalDate.now());
+
+            if (p >= 0 && p <= 31) {
+              // if so, make comment
+              // get id of user to make comment on
+              int renterId = tempBooking.getRenterId();
+              try {
+                user.addCommentForm(userInput, user, tempBooking.getBookingId(), renterId);
+              } catch (InvalidFormException e) {
+                System.out.println("Invalid Input. Try Again.");
+              }
+            } else {
+              System.out.println(
+                  "Cannot comment on renter as the booking is in the future or too far in the past.");
+            }
+          } else {
+            System.out.println(">>> Command not recognized. Please try again. >>>");
+          }
           break;
         case 0:
           System.out.println("Going Back... ");

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import models.Availability;
 import models.Booking;
+import models.Comment;
 import models.CreditCard;
 import models.Listing;
 import models.ListingComment;
@@ -40,7 +41,7 @@ public class DatabaseSelector {
         sin = results.getInt("sin");
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -77,7 +78,8 @@ public class DatabaseSelector {
             results.getString("card_type"), results.getString("exp_date")));
       }
       results.close();
-
+      preparedStatement.close();
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -116,7 +118,7 @@ public class DatabaseSelector {
             results.getString("description")));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -150,7 +152,7 @@ public class DatabaseSelector {
         amenities.add(results.getString(1));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -186,7 +188,7 @@ public class DatabaseSelector {
         amenities.add(getAmenityName(results.getInt(1), connection));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -214,7 +216,7 @@ public class DatabaseSelector {
         name = results.getString(1);
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     }
@@ -236,7 +238,7 @@ public class DatabaseSelector {
         id = results.getInt(1);
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     }
@@ -268,7 +270,7 @@ public class DatabaseSelector {
             results.getString("date"), results.getInt("rating")));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -303,7 +305,7 @@ public class DatabaseSelector {
       preparedStatement.setDouble(3, y);
 
       present = preparedStatement.execute();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -339,7 +341,7 @@ public class DatabaseSelector {
         name = results.getString("name");
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -374,10 +376,10 @@ public class DatabaseSelector {
       while (results.next()) {
         bookings.add(new Booking(results.getInt("booking_id"), results.getString("start_date"),
             results.getString("end_date"), results.getString("status"), listingId, userId,
-            results.getInt("card_num")));
+            results.getInt("card_num"), results.getDouble("cost")));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -416,7 +418,7 @@ public class DatabaseSelector {
                 results.getDouble("price"), results.getBoolean("available"), listingId));
       }
       results.close();
-
+      preparedStatement.close();
     } catch (SQLException sqlError) {
       sqlError.printStackTrace();
     } finally {
@@ -427,6 +429,121 @@ public class DatabaseSelector {
       }
     }
     return availability;
+  }
+
+
+  public static List<Comment> getUserComments(int user_id) {
+    List<Comment> comments = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM UserComments WHERE commentee_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, user_id);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        comments.add(new Comment(results.getInt("booking_id"), results.getString("comment"),
+            results.getInt("commenter_id"), user_id, /* results.getInt("listing_id"), */
+            results.getString("date"), results.getInt("rating")));
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return comments;
+  }
+
+  public static List<Booking> getUserBookings(int user_id) {
+    List<Booking> bookings = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM Bookings WHERE user_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, user_id);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        bookings.add(new Booking(results.getInt("booking_id"), results.getString("start_date"),
+            results.getString("end_date"), results.getString("status"), results.getInt("listing_id"), user_id,
+            results.getInt("card_num"), results.getDouble("cost")));
+      }
+      
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return bookings;
+  }
+
+
+  public static int getUserId(int listing_id) {
+    int id  = 0;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT user_id FROM Listings WHERE listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listing_id);
+
+      ResultSet results = preparedStatement.executeQuery();
+      if (results.next()) {
+        id = results.getInt("user_id");
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return id;
   }
 
 
