@@ -69,14 +69,14 @@ public class Search {
     }
     // rank by distance, price asc or price desc
     // distance
-//    System.out.print(" Order by: 1. Distance ASC, 2. Price ASC, 3. Price DESC");
-//    try {
-//      order = Integer.parseInt(userInput.nextLine());
-//      if (order > 3 | order < 1)
-//        order = 0;
-//    } catch (NoSuchElementException | NumberFormatException invalid) {
-//      order = 0;
-//    }
+    // System.out.print(" Order by: 1. Distance ASC, 2. Price ASC, 3. Price DESC");
+    // try {
+    // order = Integer.parseInt(userInput.nextLine());
+    // if (order > 3 | order < 1)
+    // order = 0;
+    // } catch (NoSuchElementException | NumberFormatException invalid) {
+    // order = 0;
+    // }
 
     // get listings from database
     List<String> print = new ArrayList<>();
