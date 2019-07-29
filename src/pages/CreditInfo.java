@@ -55,7 +55,7 @@ public class CreditInfo {
           System.out.println("To Add Card... ");
           try {
             addCardForm(userInput, user);
-          } catch (EmptyFormException | InvalidFormException invalid) {
+          } catch (EmptyFormException | InvalidFormException | NumberFormatException invalid) {
             System.out.println("Invalid input. Going back.");
           }
           break;
@@ -86,7 +86,7 @@ public class CreditInfo {
    * 
    */
   private static void addCardForm(Scanner userInput, User user)
-      throws EmptyFormException, InvalidFormException {
+      throws EmptyFormException, InvalidFormException, NumberFormatException {
     System.out.println("Please input your payment details:");
 
     // Get input
