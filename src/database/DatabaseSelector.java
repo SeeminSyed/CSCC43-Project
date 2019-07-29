@@ -38,7 +38,7 @@ public class DatabaseSelector {
       preparedStatement.setString(2, password);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         sin = results.getInt("sin");
       }
       results.close();
@@ -213,7 +213,7 @@ public class DatabaseSelector {
       preparedStatement.setInt(1, id);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         name = results.getString(1);
       }
       results.close();
@@ -235,7 +235,7 @@ public class DatabaseSelector {
       preparedStatement.setString(1, amenityName);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         id = results.getInt(1);
       }
       results.close();
@@ -338,7 +338,7 @@ public class DatabaseSelector {
       preparedStatement.setInt(1, renterId);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         name = results.getString("name");
       }
       results.close();
@@ -531,7 +531,7 @@ public class DatabaseSelector {
       preparedStatement.setInt(1, listing_id);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         id = results.getInt("user_id");
       }
       results.close();
@@ -579,7 +579,7 @@ public class DatabaseSelector {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -592,7 +592,7 @@ public class DatabaseSelector {
             break;
           case 3:
             print.add(results.getString("country") + ", " + results.getString("city") + ", "
-                + results.getString("postal_code") + " and listing count: "
+                + results.getString("zipCode") + " and listing count: "
                 + results.getInt("listing_count"));
             break;
           default:
@@ -641,7 +641,7 @@ public class DatabaseSelector {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -699,7 +699,7 @@ public class DatabaseSelector {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -757,7 +757,7 @@ public class DatabaseSelector {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -818,7 +818,7 @@ public class DatabaseSelector {
       preparedStatement.setString(2, end);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -881,7 +881,7 @@ public class DatabaseSelector {
       preparedStatement.setString(2, end);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         // select
         switch (option) {
           case 1:
@@ -931,7 +931,7 @@ public class DatabaseSelector {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
       ResultSet results = preparedStatement.executeQuery();
-      if (results.next()) {
+      while (results.next()) {
         int key = results.getInt("listing_id");
         if (print.containsKey(key)) {
           print.get(key).add(results.getString("comment"));
