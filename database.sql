@@ -162,8 +162,8 @@ CREATE TABLE Bookings (
   PRIMARY KEY (booking_id),
 
   FOREIGN KEY (listing_id) REFERENCES Listings(listing_id) ON DELETE CASCADE,
-  FOREIGN KEY (user_id) REFERENCES Users(sin) ON DELETE CASCADE,
-  FOREIGN KEY (card_num) REFERENCES CreditInfo(card_num) ON DELETE CASCADE
+  FOREIGN KEY (user_id) REFERENCES Users(sin),
+  FOREIGN KEY (card_num) REFERENCES CreditInfo(card_num)
 );
 
 
@@ -205,7 +205,7 @@ CREATE TABLE UserComments (
   INDEX (commentee_id),
   INDEX (rating),
 
-  PRIMARY KEY (booking_id),
+  PRIMARY KEY (commenter_id, booking_id),
 
   FOREIGN KEY (commenter_id) REFERENCES Users(sin) ON DELETE CASCADE,
   FOREIGN KEY (commentee_id) REFERENCES Users(sin) ON DELETE CASCADE,
@@ -218,10 +218,97 @@ CREATE TABLE UserComments (
 
 -- The view is actually a virtual table that was made by a select statement.
 -- Instead of sending the complex query to the database all the time, you can save the query as a view and then `SELECT * FROM view`.
---
---
--- LOCK TABLES `address` WRITE;
--- /*!40000 ALTER TABLE `address` DISABLE KEYS */;
--- INSERT INTO `address` VALUES ();
--- /*!40000 ALTER TABLE `address` ENABLE KEYS */;
--- UNLOCK TABLES;
+
+-- to get num listings
+CREATE OR REPLACE VIEW listingCountByCountryCityZip AS
+  (SELECT A.country, A.city, A.zipCode, COUNT(A.listing_id) AS listing_count
+		FROM Address A
+		GROUP BY A.country, A.city, A.zipCode
+	);
+-- to get num listings
+CREATE OR REPLACE VIEW listingCountByCountryCity AS
+  (SELECT L.country, L.city, SUM(L.listing_count) AS listing_count
+		FROM listingCountByCountryCityZip L
+		GROUP BY L.country, L.city
+	);
+-- to get num listings
+CREATE OR REPLACE VIEW listingCountByCountry AS
+	(SELECT L.country, SUM(L.listing_count) AS listing_count
+		FROM listingCountByCountryCity L
+		GROUP BY L.country
+  );
+
+-- to get num listings per host
+CREATE OR REPLACE VIEW listingsCountPerHostByCity AS
+	(SELECT L.user_id, A.country, A.city, COUNT(L.listing_id) AS listing_count
+		FROM Listings L
+		LEFT JOIN Address A ON L.listing_id = A.listing_id
+		GROUP BY L.user_id, A.country, A.city
+	);
+-- to get num listings per host
+CREATE OR REPLACE VIEW listingsCountPerHostByCountry AS
+	(SELECT L.user_id, L.country, COUNT(L.listing_count) AS listing_count
+		FROM listingsCountPerHostByCity L
+		GROUP BY L.user_id, L.country
+	);
+
+-- to get commercial hosts
+CREATE OR REPLACE VIEW commercialHostPerCity AS
+	(SELECT L.user_id, L.country, L.city, L.listing_count
+		FROM listingsCountPerHostByCity L, listingCountByCountryCity K
+		WHERE L.listing_count/K.listing_count > 0.1
+		GROUP BY L.user_id, L.country, L.city
+	);
+-- to get commercial hosts
+CREATE OR REPLACE VIEW commercialHostPerCountry AS
+	(SELECT L.user_id, L.country, L.listing_count
+		FROM listingsCountPerHostByCountry L, listingCountByCountry K
+		WHERE L.listing_count/K.listing_count > 0.1
+		GROUP BY L.user_id, L.country
+	);
+
+----
+
+-- to get total number of bookings
+CREATE OR REPLACE VIEW bookingsPerCityZipCodeAndPeriod AS
+(SELECT A.country, A.city, A.zipCode, B.start_date, B.end_date, Count(B.booking_id) AS booking_count
+	FROM Bookings B
+	LEFT JOIN Address A ON B.listing_id = A.listing_id
+	GROUP BY A.country, A.city, A.zipCode
+);
+
+-- to get total number of bookings
+CREATE OR REPLACE VIEW bookingsPerCityAndPeriod AS
+(SELECT B.country, B.city, B.start_date, B.end_date, Count(B.booking_count) AS booking_count
+	FROM bookingsPerCityZipCodeAndPeriod B
+	GROUP BY B.country, B.city
+);
+
+-- to rank users by bookings
+CREATE OR REPLACE VIEW userBookingsCountPerCityAndPeriod AS
+(SELECT A.country, A.city, B.user_id, B.start_date, B.end_date, Count(B.booking_id) AS booking_count
+	FROM Bookings B
+	LEFT JOIN Address A ON B.listing_id = A.listing_id
+	GROUP BY A.country, A.city, B.user_id
+);
+-- to rank users by bookings
+CREATE OR REPLACE VIEW userBookingsCountAndPeriod AS
+(SELECT B.user_id, B.start_date, B.end_date, Count(B.booking_count) AS booking_count
+	FROM userBookingsCountPerCityAndPeriod B
+	GROUP BY B.user_id
+);
+
+-- rank users by cancellations
+CREATE OR REPLACE VIEW bookingCancellations AS
+	(SELECT B.user_id, B.status, COUNT(*) AS cancel_count
+		FROM Bookings B
+		WHERE B.end_date > (CURDATE() - INTERVAL 1 YEAR)
+			AND (B.status <> 'Booked')
+		GROUP BY B.user_id
+	);
+
+CREATE OR REPLACE VIEW allListingComments AS
+	(SELECT L.listing_id, L.comment
+		FROM ListingComments L
+		GROUP BY L.listing_id
+	);

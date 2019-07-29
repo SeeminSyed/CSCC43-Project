@@ -257,8 +257,8 @@ public class User {
   }
 
   /**
-   * TODO Returns suggested price increase of adding an amenity to a listing based on comparisons with
-   * other listings
+   * TODO Returns suggested price increase of adding an amenity to a listing based on comparisons
+   * with other listings
    */
   public String getAmenityPrice(String amenity) {
     return "TODO";
