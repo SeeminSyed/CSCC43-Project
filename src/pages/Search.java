@@ -21,7 +21,7 @@ public class Search {
     do {
       // (give input or nothing to skip that filter option)
       try {
-        System.out.print(" 1. Search, 0, go back: ");
+        System.out.print(" Type 1 to search, 0, go back: ");
         try {
           userChoice = Integer.parseInt(userInput.nextLine());
         } catch (NoSuchElementException | NumberFormatException invalid) {

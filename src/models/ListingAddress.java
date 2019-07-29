@@ -28,6 +28,7 @@ public class ListingAddress {
   public String toString() {
     return (getStreet() + ", " + getUnit() + ", " + getCity() + ", " + getCountry() + ", "
         + getZipCode() + "\nCoordinates: (" + getX() + ", " + getY() + ")");
+
   }
 
   public int getListingId() {
@@ -39,7 +40,11 @@ public class ListingAddress {
   }
 
   public String getUnit() {
-    return unit;
+    if (unit != null) {
+      return unit;
+    } else {
+      return "no unit";
+    }
   }
 
   public void setUnit(String unit) {

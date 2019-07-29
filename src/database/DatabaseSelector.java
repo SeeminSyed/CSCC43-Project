@@ -14,6 +14,7 @@ import models.Booking;
 import models.Comment;
 import models.CreditCard;
 import models.Listing;
+import models.ListingAddress;
 import models.ListingComment;
 
 public class DatabaseSelector {
@@ -916,6 +917,7 @@ public class DatabaseSelector {
    */
   public static HashMap<Integer, List<String>> getAllListingComments() {
     HashMap<Integer, List<String>> print = new HashMap<>();
+    List<String> a = new ArrayList<>();
 
     // Get connection
     Connection connection = null;
@@ -926,7 +928,7 @@ public class DatabaseSelector {
       e.printStackTrace();
     }
 
-    String sql = "SELECT * FROM allListingComments ORDER BY listing_id DESC";
+    String sql = "SELECT listing_id, comment FROM ListingComments ORDER BY listing_id DESC";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -937,6 +939,7 @@ public class DatabaseSelector {
           print.get(key).add(results.getString("comment"));
         } else {
           print.put(key, new ArrayList<>());
+          print.get(key).add(results.getString("comment"));
         }
       }
       results.close();
@@ -1051,6 +1054,45 @@ public class DatabaseSelector {
             results.getInt("num_bedrooms"), results.getInt("num_beds"),
             results.getInt("num_bathrooms"), results.getString("title"),
             results.getString("description"));
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return l;
+  }
+
+  public static ListingAddress getListingAddress(int listingId) {
+    ListingAddress l = null;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM Address WHERE listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listingId);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        l = new ListingAddress(listingId, results.getString("unit"), results.getString("street"),
+            results.getString("city"), results.getString("state"), results.getString("country"),
+            results.getString("zipCode"), results.getDouble("latitude"),
+            results.getDouble("longitude"));
       }
       results.close();
       preparedStatement.close();

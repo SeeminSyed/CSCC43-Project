@@ -42,6 +42,7 @@ public class Listing {
     this.numBathrooms = numBathrooms;
     this.title = title;
     this.description = description;
+    this.address = DatabaseSelector.getListingAddress(listingId);
 
     this.amenities.addAll(DatabaseSelector.getListingAmenities(getListingId()));
     this.comments.addAll(DatabaseSelector.getListingComments(getListingId()));
@@ -50,7 +51,9 @@ public class Listing {
   }
 
   public String toStringBasic() {
-    String pop = (getTitle() + "\n" + getDescription() + "\n" + getAddress().toString());
+    String pop = (getTitle() + "\n");
+    pop += (getDescription() + "\n");
+    pop += (getAddress().toString());
     return pop;
   }
 
@@ -77,7 +80,8 @@ public class Listing {
 
   public void cancelBooking(int bookingId) {
     // database
-    this.bookings.get(bookingId).databaseCancelBooking("Cancelled by Host", LocalDate.now().toString());
+    this.bookings.get(bookingId).databaseCancelBooking("Cancelled by Host",
+        LocalDate.now().toString());
   }
 
   /**
@@ -127,13 +131,13 @@ public class Listing {
   public boolean addListingAvailability(String listingUse, String startDate, String endDate,
       Double price, boolean available) {
     // insert into database
-    int availability_id =
-        databaseInsertListingAvailability(listingUse, startDate, endDate, price, available, getListingId());
+    int availability_id = databaseInsertListingAvailability(listingUse, startDate, endDate, price,
+        available, getListingId());
 
     // add to user object
     if (availability_id > 0) {
-      this.availabilities
-          .add(new Availability(availability_id, listingUse, startDate, endDate, price, available, getListingId()));
+      this.availabilities.add(new Availability(availability_id, listingUse, startDate, endDate,
+          price, available, getListingId()));
       return true;
     }
     return false;
@@ -146,7 +150,8 @@ public class Listing {
       Double price, boolean available, int listing_id) {
     int availability_id = 0;
     // insert info to database and if row number returned, then valid
-    if ((availability_id = DatabaseInserter.insertListingAvailability(listingUse, startDate, endDate, price, available, listing_id)) > 0) {
+    if ((availability_id = DatabaseInserter.insertListingAvailability(listingUse, startDate,
+        endDate, price, available, listing_id)) > 0) {
       System.out.println("Availability Added!");
     } else {
       System.out.println(">>> \nYour availability was not added. Please try again.\n>>>");
