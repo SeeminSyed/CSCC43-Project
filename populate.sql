@@ -1,5 +1,7 @@
+-- C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/populate.sql
 
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (0, 'Mrs. Jakayla Swaniawski', 'caroline91@example.net', '2c7313b9ad150124f2cac129eb83c47c39919d7a', '1970-04-11', 'cupiditate', 922669);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (10, '1', '1', '1', '1970-04-11', '1', 1);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Mrs. Jakayla Swaniawski', 'caroline91@example.net', '2c7313b9ad150124f2cac129eb83c47c39919d7a', '1970-04-11', 'cupiditate', 922669);
 INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Prof. Skylar Tromp III', 'matilde11@example.org', '95dd7f03ae8e5acfe6b6701277cb546919845f46', '1991-02-05', 'quia', 1);
 INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (2, 'Prof. Greyson Glover', 'arlo23@example.org', 'de421df36049eb423f773d05513f3ec0ae628aed', '1980-11-27', 'facere', 1);
 INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (3, 'Dr. Lamont Hodkiewicz Jr.', 'hettinger.alejandra@example.com', '2281ba69a608e236f2ed252240bc22c4d522aaf4', '1978-12-18', 'dolorem', 810089);
@@ -75,8 +77,4 @@ INSERT INTO `ListingComments` (`comment`, `date`, `renter_id`, `listing_id`, `bo
 INSERT INTO `ListingComments` (`comment`, `date`, `renter_id`, `listing_id`, `booking_id`, `rating`) VALUES ('Reprehenderit et ad distinctio natus. Possimus nemo porro iusto. Id et libero quos facilis quaerat cumque. Cupiditate assumenda ipsum ab et nemo. Quia facere dolorum magnam aspernatur.', '2013-03-13 01:59:50', 3, 14, 4, 3);
 INSERT INTO `ListingComments` (`comment`, `date`, `renter_id`, `listing_id`, `booking_id`, `rating`) VALUES ('Qui nostrum nemo rerum quas. Non consequatur nobis iusto minima. Nostrum voluptatum autem voluptates ea atque corrupti. Quia rem fugit debitis non omnis.', '2006-06-09 14:40:35', 4, 15, 5, 2);
 
-
-
-
-
-UserComments
+-- UserComments

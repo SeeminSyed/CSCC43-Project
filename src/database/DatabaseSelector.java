@@ -331,7 +331,7 @@ public class DatabaseSelector {
     }
 
     // select
-    String sql = "SELECT name FROM Users WHERE user_id = ?";
+    String sql = "SELECT name FROM Users WHERE sin = ?";
     try {
       PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
@@ -916,7 +916,7 @@ public class DatabaseSelector {
    */
   public static HashMap<Integer, List<String>> getAllListingComments() {
     HashMap<Integer, List<String>> print = new HashMap<>();
-    
+
     // Get connection
     Connection connection = null;
     try {
@@ -953,5 +953,117 @@ public class DatabaseSelector {
     return print;
   }
 
+  public static List<String> getAllListingsByCoordinate(Double lat, Double lon, Double dist) {
+    List<String> listingStrings = new ArrayList<>();
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+    // select all listing_ids, lat, long from address
+    // calculate which have right distance
+    // get listings from all correct listing ids
+    // return strings
+
+    // select
+    String sql = "SELECT * FROM searchListingInfo";
+    // A.latitude, A.longitude, L.title, L.description, L.listing_id
+
+    // A.latitude, A.longitude, A.street, A.unit, A.city, A.state, A.country, A.zipCode,
+    // L.listing_id, L.listing_type, L.num_bedrooms, L.num_beds, L.num_bathrooms
+
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        double x = results.getDouble("latitude");
+        double y = results.getDouble("longitude");
+        double d = haversine(lat, lon, x, y);
+        double price = results.getDouble("price");
+        if (d < dist) {
+          listingStrings.add(results.getInt("listing_id") + ". " + results.getString("title")
+              + " -- " + String.format("%.2f", d) + "km away\n" + results.getString("description")
+              + "\n From: " + results.getString("start_date") + " -- "
+              + results.getString("end_date") + " At $" + String.format("%.2f", price));
+        }
+
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return listingStrings;
+  }
+
+  /**
+   * https://rosettacode.org/wiki/Haversine_formula#Java
+   * 
+   * @param lat1
+   * @param lon1
+   * @param lat2
+   * @param lon2
+   * @return
+   */
+  public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+    double R = 6372.8; // km
+    double dLat = Math.toRadians(lat2 - lat1);
+    double dLon = Math.toRadians(lon2 - lon1);
+    lat1 = Math.toRadians(lat1);
+    lat2 = Math.toRadians(lat2);
+
+    double a = Math.pow(Math.sin(dLat / 2), 2)
+        + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+    double c = 2 * Math.asin(Math.sqrt(a));
+    return R * c;
+  }
+
+  public static Listing getListing(int listing_id) {
+    Listing l = null;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // select
+    String sql = "SELECT * FROM Listings WHERE listing_id = ?";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+      preparedStatement.setInt(1, listing_id);
+
+      ResultSet results = preparedStatement.executeQuery();
+      while (results.next()) {
+        l = new Listing(listing_id, results.getInt("user_id"), results.getString("listing_type"),
+            results.getInt("num_bedrooms"), results.getInt("num_beds"),
+            results.getInt("num_bathrooms"), results.getString("title"),
+            results.getString("description"));
+      }
+      results.close();
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return l;
+  }
 
 }

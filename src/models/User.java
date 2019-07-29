@@ -103,6 +103,35 @@ public class User {
     }
   }
 
+  public boolean addBooking(String startDate, String endDate, int listingId,
+      int renterId, int cardNum, Double cost) {
+    // insert into database
+    int a  = databaseInsertBooking(startDate, endDate, "Booked", listingId, this.sin, cardNum, cost);
+    if(a > 0) {
+      // add to user object
+      this.bookings.add(new Booking(a, startDate, endDate, "Booked", listingId, this.sin, cardNum, cost));
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Returns true if added
+   */
+  public int databaseInsertBooking(String startDate, String endDate, String status, int listingId,
+      int renterId, int cardNum, Double cost) {
+    int booking_id;
+    // insert info to database and if row number returned, then valid
+    if ((booking_id = DatabaseInserter.insertBooking(startDate, endDate, status, listingId, this.sin, cardNum, cost)) > 0) {
+      System.out.println("Booking Added!");
+      return booking_id;
+    } else {
+      System.out.println(">>> \nYour card was not added. Please try again.\n>>>");
+      return booking_id;
+    }
+  }
+
+
   /**
    * Returns true if added
    */
@@ -271,5 +300,6 @@ public class User {
   public List<String> getAllAmenities() {
     return DatabaseSelector.getAllAmenities();
   }
+
 
 }

@@ -448,4 +448,52 @@ public class DatabaseInserter {
     return row;
   }
 
+  public static int insertBooking(String startDate, String endDate, String status, int listingId,
+      int sin, int cardNum, Double cost) {
+    int row = -1;
+    int b = -1;
+    // Get connection
+    Connection connection = null;
+    try {
+      connection = Driver.connectOrCreateDataBase();
+    } catch (ClassNotFoundException e) {
+      System.out.println("Something went wrong with your connection! See details below: ");
+      e.printStackTrace();
+    }
+
+    // Insert
+    String sql = "INSERT INTO Bookings(start_date, end_date, status, listing_id, renter_id, cardNum, cost) VALUES(?,?,?,?,?,?,?)";
+    try {
+      PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+
+      preparedStatement.setString(1, startDate);
+      preparedStatement.setString(2, endDate);
+      preparedStatement.setString(3, status);
+      preparedStatement.setInt(4, listingId);
+      preparedStatement.setInt(5, sin);
+      preparedStatement.setInt(6, cardNum);
+      preparedStatement.setDouble(7, cost);
+
+      row = preparedStatement.executeUpdate();
+
+      if (row > 0) {
+        ResultSet results = preparedStatement.getGeneratedKeys();
+        results.next();
+        b = results.getInt(1);
+      }
+
+      preparedStatement.close();
+    } catch (SQLException sqlError) {
+      sqlError.printStackTrace();
+    } finally {
+      try {
+        connection.close();
+      } catch (SQLException sqlError) {
+        sqlError.printStackTrace();
+      }
+    }
+    return b;
+  }
+
 }
