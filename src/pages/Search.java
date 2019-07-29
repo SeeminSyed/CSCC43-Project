@@ -40,7 +40,7 @@ public class Search {
     System.out.println("Search by coordinates:");
     Double x = 0.0;
     Double y = 0.0;
-    Double dist = 25.0;
+    Double dist = 1000.0;
     int order = 0;
     // get search options and validate
     // latitude
@@ -61,7 +61,7 @@ public class Search {
       throw new EmptyFormException();
     }
     // distance
-    System.out.print(" Radius (default 25 km): ");
+    System.out.print(" Radius (default 1000 km): ");
     try {
       dist = Double.parseDouble(userInput.nextLine());
     } catch (NoSuchElementException | NumberFormatException invalid) {
@@ -69,14 +69,14 @@ public class Search {
     }
     // rank by distance, price asc or price desc
     // distance
-    System.out.print(" Order by: 1. Distance ASC, 2. Price ASC, 3. Price DESC");
-    try {
-      order = Integer.parseInt(userInput.nextLine());
-      if (order > 3 | order < 1)
-        order = 0;
-    } catch (NoSuchElementException | NumberFormatException invalid) {
-      order = 0;
-    }
+//    System.out.print(" Order by: 1. Distance ASC, 2. Price ASC, 3. Price DESC");
+//    try {
+//      order = Integer.parseInt(userInput.nextLine());
+//      if (order > 3 | order < 1)
+//        order = 0;
+//    } catch (NoSuchElementException | NumberFormatException invalid) {
+//      order = 0;
+//    }
 
     // get listings from database
     List<String> print = new ArrayList<>();
