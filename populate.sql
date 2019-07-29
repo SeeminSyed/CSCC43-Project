@@ -1,28 +1,27 @@
 -- C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/populate.sql
 
 INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (10, '1', '1', '1', '1970-04-11', '1', 1);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Mrs. Jakayla Swaniawski', 'caroline91@example.net', '2c7313b9ad150124f2cac129eb83c47c39919d7a', '1970-04-11', 'cupiditate', 922669);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Prof. Skylar Tromp III', 'matilde11@example.org', '95dd7f03ae8e5acfe6b6701277cb546919845f46', '1991-02-05', 'quia', 1);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (2, 'Prof. Greyson Glover', 'arlo23@example.org', 'de421df36049eb423f773d05513f3ec0ae628aed', '1980-11-27', 'facere', 1);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (3, 'Dr. Lamont Hodkiewicz Jr.', 'hettinger.alejandra@example.com', '2281ba69a608e236f2ed252240bc22c4d522aaf4', '1978-12-18', 'dolorem', 810089);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (4, 'Mrs. Lina Tremblay PhD', 'emmitt.vonrueden@example.org', '7389eff76cc3d2a34a49992016e48b073907ee5c', '1997-02-14', 'consectetur', 1);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (5, 'Tevin Schamberger', 'wellington.cole@example.org', 'f6a41b88190428430eb8f56a0a56051e6ff8d618', '1987-07-31', 'ut', 665754);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (6, 'Dr. Geo Nikolaus', 'schmitt.antonietta@example.com', 'dc2fe190b0ad390f955d68a71a94ab68dbf0f7d3', '1996-07-19', 'beatae', 28468);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (7, 'Prof. Marietta Bailey', 'simonis.kaitlin@example.org', '14b7c06ee2bfedbb1a23bd9ef8802f4e8c615b9e', '1988-11-11', 'ducimus', 124181);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (8, 'Lucio Batz', 'toy.jeanne@example.org', 'd1d10be1a61e24fe58803342b195e1ebce6c37e7', '1975-02-08', 'aliquam', 2147483647);
-INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (9, 'Niko Haley', 'tamara.goldner@example.net', '2f437adb4e95557a1e3726a839ed6857fcf2a4c4', '1987-08-14', 'ea', 35964);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Mrs. Jakayla Swaniawski', 'caroline91@example.net', '2c7313b9ada', '1970-04-11', 'cupiditate', 922669);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (2, 'Prof. Greyson Glover', 'arlo23@example.org', 'de421df36049eb423', '1980-11-27', 'facere', 1);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (1, 'Prof. Skylar Tromp III', 'matilde11@example.org', '95dd7f03ae8e', '1991-02-05', 'quia', 1);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (3, 'Dr. Lamont Hodkiewicz Jr.', 'hettinger.alejandra@example.com', '2281ba69a608e236f', '1978-12-18', 'dolorem', 810089);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (4, 'Mrs. Lina Tremblay PhD', 'emmitt.vonrueden@example.org', '7389eff76cc3d2a34a49992', '1997-02-14', 'consectetur', 1);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (5, 'Tevin Schamberger', 'wellington.cole@example.org', 'f6a41b88190428430eb8f56a0a560', '1987-07-31', 'ut', 665754);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (6, 'Dr. Geo Nikolaus', 'schmitt.antonietta@example.com', 'dc2fe190b0ad390f955d68a71a9', '1996-07-19', 'beatae', 28468);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (7, 'Prof. Marietta Bailey', 'simonis.kaitlin@example.org', '14b7c06ee2bfedbb1a23bd9ef', '1988-11-11', 'ducimus', 124181);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (8, 'Lucio Batz', 'toy.jeanne@example.org', 'd1d10be1a61', '1975-02-08', 'aliquam', 2147483647);
+INSERT INTO `Users` (`sin`, `name`, `email`, `password`, `dob`, `occupation`, `phoneNum`) VALUES (9, 'Niko Haley', 'tamara.goldner@example.net', '2f437ad', '1987-08-14', 'ea', 35964);
 
 
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (0, 4294967295, 'American Express', '1990-03-03');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (1, 4294967295, 'Mastercard', '2012-11-14');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (2, 4294967295, 'Discover', '1995-02-04');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (3, 4294967295, 'Mastercard', '1997-08-26');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (4, 4294967295, 'Mastercard', '2019-06-09');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (5, 4294967295, 'Mastercard', '1985-01-19');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (6, 4294967295, 'Mastercard', '1980-05-17');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (7, 4294967295, 'VISA', '2003-04-25');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (8, 4294967295, 'Mastercard', '2012-05-15');
-INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (9, 4294967295, 'Discover', '1992-07-13');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (0, 294, 'Mastercard', '2012-11-14');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (2, 495, 'Discover', '1995-02-04');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (3, 65, 'Mastercard', '1997-08-26');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (4, 43, 'Mastercard', '2019-06-09');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (5, 425, 'Mastercard', '1985-01-19');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (6, 4235, 'Mastercard', '1980-05-17');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (7, 429, 'VISA', '2003-04-25');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (8, 295, 'Mastercard', '2012-05-15');
+INSERT INTO `CreditInfo` (`user_id`, `card_num`, `card_type`, `exp_date`) VALUES (9, 495, 'Discover', '1992-07-13');
 
 
 
