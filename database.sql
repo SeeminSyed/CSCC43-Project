@@ -1,4 +1,6 @@
--- C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/database.sql
+-- source C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/database.sql;
+-- source C:/Users/seemi/Desktop/School/Uni/Semester 6 S19/CSCC43/Project/CSCC43-Project/populate.sql;
+
 DROP DATABASE IF EXISTS mybnb;
 CREATE DATABASE mybnb;
 USE mybnb;

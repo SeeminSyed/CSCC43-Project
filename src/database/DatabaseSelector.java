@@ -983,7 +983,8 @@ public class DatabaseSelector {
         double y = results.getDouble("longitude");
         double d = haversine(lat, lon, x, y);
         double price = results.getDouble("price");
-        if (d < dist) {
+        System.out.println(d + " " + dist);
+        if (d <= dist) {
           listingStrings.add(results.getInt("listing_id") + ". " + results.getString("title")
               + " -- " + String.format("%.2f", d) + "km away\n" + results.getString("description")
               + "\n From: " + results.getString("start_date") + " -- "

@@ -21,7 +21,15 @@ public class Search {
     do {
       // (give input or nothing to skip that filter option)
       try {
-        min(userInput, user);
+        System.out.print(" 1. Search, 0, go back: ");
+        try {
+          userChoice = Integer.parseInt(userInput.nextLine());
+        } catch (NoSuchElementException | NumberFormatException invalid) {
+          userChoice = 0;
+        }
+        if (userChoice > 0) {
+          min(userInput, user);
+        }
       } catch (EmptyFormException e) {
       }
     } while (userChoice != 0);
@@ -93,11 +101,12 @@ public class Search {
       }
 
       if (userChoice > 0) {
-        if(user.getCards().size() == 0) {
-          System.out.println("You need to have at least 1 card added to your account to book a listing.");
+        if (user.getCards().size() == 0) {
+          System.out
+              .println("You need to have at least 1 card added to your account to book a listing.");
         } else {
-         
-        addBooking(userInput, user, userChoice);
+
+          addBooking(userInput, user, userChoice);
         }
       }
 
@@ -107,11 +116,11 @@ public class Search {
   private static void addBooking(Scanner userInput, User user, int userChoice) {
     Listing listing = DatabaseSelector.getListing(userChoice);
     System.out.println(listing.toString());
-    int i =0;
+    int i = 0;
     // show availabilites
     for (Availability a : listing.getAvailabilities()) {
       i++;
-      System.out.println(i + ". "+a.toString());
+      System.out.println(i + ". " + a.toString());
     }
 
     do {
@@ -124,10 +133,10 @@ public class Search {
       }
 
       if (userChoice > 0) {
-        Availability b =  listing.getAvailabilities().get(userChoice-1);
-        
-        user.addBooking(b.getStartDate(),b.getEndDate(), listing.getListingId(),
-            user.getSin(), user.getCards().get(1).getCardNum(), b.getPrice());
+        Availability b = listing.getAvailabilities().get(userChoice - 1);
+
+        user.addBooking(b.getStartDate(), b.getEndDate(), listing.getListingId(), user.getSin(),
+            user.getCards().get(1).getCardNum(), b.getPrice());
       }
 
     } while (userChoice != 0);
